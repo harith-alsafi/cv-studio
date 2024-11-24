@@ -14,6 +14,7 @@ const templates = [
 export default function Templates() {
     const router = useRouter()
 
+
     const handleTemplateSelect = (type: TemplateType) => {
         router.push(`/editor?template=${type}`)
     }

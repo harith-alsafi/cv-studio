@@ -1,19 +1,18 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import Layout from '@/components/layout'
+import React, {useEffect, useState} from 'react'
+import {useSearchParams} from 'next/navigation'
+import {Button} from '@/components/ui/button'
+import {Textarea} from '@/components/ui/textarea'
 import FileUpload from '@/components/file-upload'
 import PDFViewer from '@/components/pdf-viewer'
-import { TemplateType } from '../types/templates'
+import {TemplateType} from '../types/templates'
 
 export default function CVEditor() {
     const [jobDescription, setJobDescription] = useState('')
     const [resumeFile, setResumeFile] = useState<File | null>(null)
     const [generatedPDF, setGeneratedPDF] = useState<string | null>(null)
-    const [templateType, setTemplateType] = useState<TemplateType | null>(null)
+    const [templateType, setTemplateType] = useState<TemplateType | null>(TemplateType.CLASSIC)
 
     const searchParams = useSearchParams()
 
