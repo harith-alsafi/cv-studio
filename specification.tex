@@ -1,0 +1,55 @@
+%%P: SECTIONS INFO EXPERIENCE ABOUT_ME EDUCATION
+
+%%P: DOC_START_BEGIN
+\begin{document}
+%%P: DOC_START_END
+
+%%P: INFO.(NAME) 
+\name{__INFO.NAME__}
+%%P: INFO.(ROLE) 
+\tagline{__INFO.ROLE__}
+%%P: INFO.(LOCATION) 
+\location{__INFO.LOCATION__}
+%%P: INFO.(EMAIL) 
+\email{\href{mailto:__INFO.EMAIL__}{__INFO.EMAIL__}}
+%%P: INFO.(PHONE) 
+\phone{\href{tel:__INFO.PHONE__}{__INFO.PHONE__}}
+%%P: INFO.(WEBSITE) 
+\homepage{\href{__INFO.PORTFOLIO__}{__INFO.PORTFOLIO__}}
+%%P: INFO.(LINKEDIN) 
+\linkedin{\href{__INFO.LINKEDIN__}{__INFO.LINKEDIN__}}
+%%P: INFO.(GITHUB) 
+\github{\href{__INFO.GITHUB__}{__INFO.GITHUB__}}
+
+
+%%P: SKIP_1 \smallskip
+
+\cvsection{\faBlackTie \, About me}
+__ABOUT_ME__
+
+\cvsection{\faBriefcase \, Experience}
+
+%%P: EXPERIENCE.BEGIN
+\cvevent{__EXPERIENCE.ROLE__}{__EXPERIENCE.COMPANY__}{__EXPERIENCE.DURATION__}{__EXPERIENCE.LOCATION__}
+\begin{itemize}
+%%P: EXPERIENCE.ITEM_BEGIN
+\item __EXPERIENCE.ITEM__
+%%P: EXPERIENCE.ITEM_END
+\end{itemize}
+%%P: EXPERIENCE.END
+
+%%P: EXPERIENCE.DIVIDER \tightdivider
+
+%%P: EXPERIENCE.ENDER \medskip
+
+
+\cvsection{ \faBook \, Education}
+\cveducation{BEng (Hons) in Electronics and Computer}{University of Leeds (UoL)}{Sept 2019 - June 2024}{First-Class Honors}
+\begin{itemize} 
+\item Embedded systems, Microprocessors, FPGA, Circuit Analysis, Signal processing, Networking,  Compiler design
+\item Cloud and Parallel computing, Secure and Distributed systems, Cybersecurity, Software Engineering, Research
+\end{itemize}
+
+%%P: DOC_END_BEGIN
+\end{document}
+%%P: DOC_END_END
