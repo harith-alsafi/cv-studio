@@ -6,7 +6,7 @@ import {Button} from '@/components/ui/button'
 import {Textarea} from '@/components/ui/textarea'
 import FileUpload from '@/components/file-upload'
 import PDFViewer from '@/components/pdf-viewer'
-import {TemplateType} from '../types/templates'
+import {TemplateType} from '../../types/templates'
 
 export default function CVEditor() {
     const [jobDescription, setJobDescription] = useState('')

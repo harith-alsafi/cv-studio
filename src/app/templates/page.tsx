@@ -4,7 +4,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import Layout from '@/components/layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { TemplateType } from '../types/templates'
+import { TemplateType } from '../../types/templates'
 
 const templates = [
     { name: 'Modern', type: TemplateType.MODERN },
