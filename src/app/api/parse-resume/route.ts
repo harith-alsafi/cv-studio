@@ -79,7 +79,7 @@ export async function POST(request: Request) {
               },
               courses: {
                 type: "array",
-                description: "A collection of courses that the individual has completed, can also include string descriptions.",
+                description: "A collection of courses that the individual has completed, part of academic study or independent, can also include string descriptions.",
                 items: {
                   anyOf: [
                     { "$ref": "#/$defs/section" },
