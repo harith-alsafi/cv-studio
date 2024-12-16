@@ -1,55 +1,43 @@
-%%P: SECTIONS INFO EXPERIENCE ABOUT_ME EDUCATION
-
-%%P: DOC_START_BEGIN
+%%%B: DOC.START
 \begin{document}
-%%P: DOC_START_END
+%%%E: DOC.START
 
-%%P: INFO.(NAME) 
-\name{__INFO.NAME__}
-%%P: INFO.(ROLE) 
-\tagline{__INFO.ROLE__}
-%%P: INFO.(LOCATION) 
-\location{__INFO.LOCATION__}
-%%P: INFO.(EMAIL) 
-\email{\href{mailto:__INFO.EMAIL__}{__INFO.EMAIL__}}
-%%P: INFO.(PHONE) 
-\phone{\href{tel:__INFO.PHONE__}{__INFO.PHONE__}}
-%%P: INFO.(WEBSITE) 
-\homepage{\href{__INFO.PORTFOLIO__}{__INFO.PORTFOLIO__}}
-%%P: INFO.(LINKEDIN) 
-\linkedin{\href{__INFO.LINKEDIN__}{__INFO.LINKEDIN__}}
-%%P: INFO.(GITHUB) 
-\github{\href{__INFO.GITHUB__}{__INFO.GITHUB__}}
+%%%B: INFO.NAME
+\name{__NAME__}
+%%%E: INFO.NAME
 
+%%%B: DOC.SKIP_S
+\smallskip
+%%%E: DOC.SKIP_S
 
-%%P: SKIP_1 \smallskip
-
+%%%B: INFO.ABOUT
 \cvsection{\faBlackTie \, About me}
-__ABOUT_ME__
+__ABOUT__
+%%%E: INFO.ABOUT
 
+%%%B: SECTION.EXPERIENCE.HEADER
 \cvsection{\faBriefcase \, Experience}
+%%%E: SECTION.EXPERIENCE.HEADER
 
-%%P: EXPERIENCE.BEGIN
-\cvevent{__EXPERIENCE.ROLE__}{__EXPERIENCE.COMPANY__}{__EXPERIENCE.DURATION__}{__EXPERIENCE.LOCATION__}
+%%%B: SECTION.EXPERIENCE.LOOP
+\cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
 \begin{itemize}
-%%P: EXPERIENCE.ITEM_BEGIN
-\item __EXPERIENCE.ITEM__
-%%P: EXPERIENCE.ITEM_END
+__CONTENT__
 \end{itemize}
-%%P: EXPERIENCE.END
+%%%E: SECTION.EXPERIENCE.LOOP
 
-%%P: EXPERIENCE.DIVIDER \tightdivider
+%%%B: SECTION.EXPERIENCE.CONTENT
+\item __CONTENT__
+%%%E: SECTION.EXPERIENCE.CONTENT
 
-%%P: EXPERIENCE.ENDER \medskip
+%%%B: SECTION.EXPERIENCE.AFTER_EACH
+\tightdivider
+%%%E: SECTION.EXPERIENCE.AFTER_EACH
 
+%%%B: SECTION.EXPERIENCE.FOOTER
+\medskip
+%%%E: SECTION.EXPERIENCE.FOOTER
 
-\cvsection{ \faBook \, Education}
-\cveducation{BEng (Hons) in Electronics and Computer}{University of Leeds (UoL)}{Sept 2019 - June 2024}{First-Class Honors}
-\begin{itemize} 
-\item Embedded systems, Microprocessors, FPGA, Circuit Analysis, Signal processing, Networking,  Compiler design
-\item Cloud and Parallel computing, Secure and Distributed systems, Cybersecurity, Software Engineering, Research
-\end{itemize}
-
-%%P: DOC_END_BEGIN
+%%%B: DOC.END
 \end{document}
-%%P: DOC_END_END
+%%%E: DOC.END

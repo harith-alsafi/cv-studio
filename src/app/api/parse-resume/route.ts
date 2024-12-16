@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import dotenv from 'dotenv';
+
 
 
 const openai = new OpenAI({

@@ -1,0 +1,16 @@
+info:
+  name: |
+    \name{__NAME__}
+  about: |
+    \about{__ABOUT__}
+
+document:
+  start: |
+    \documentclass{article}
+    \usepackage{lipsum}
+    \begin{document}
+  end: |
+    \end{document}
+  skip_s: |
+    \smallskip
+  

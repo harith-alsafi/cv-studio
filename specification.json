@@ -1,0 +1,31 @@
+{
+    "info": {
+    },
+
+    "document": {
+
+    },
+
+    "section":{
+        "experience": {
+            "header": [
+                ""
+            ],
+
+            "main_loop": [
+                "\\cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}"
+            ],
+
+            "content_loop": [
+
+            ]
+
+
+
+
+
+        }
+    }
+
+    
+}
