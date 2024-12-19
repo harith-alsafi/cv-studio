@@ -1,9 +1,10 @@
 export interface Section {
     title: string;
-    content: string;
+    content: string | string[];
     startDate: string;
     endDate: string;
     organization: string;
+    location: string;
 }
 
 export interface Resume {
