@@ -7,19 +7,29 @@ export interface Section {
     location: string;
 }
 
+export interface LanguageLevel{
+    name: string;
+    level: string;
+}
+
 export interface Resume {
     name: string;
     title: string;
     about: string;
-    education: Section[];
-    experience: Section[];
-    projects?: Section[] | string[];
-    courses?: Section[] | string[];
-    skills: string[];
     email?: string;
     phone?: string;
     portfolio?: string;
     linkedin?: string;
     github?: string;
     address?: string;
+    education: Section[];
+    experience: Section[];
+    projects?: Section[];
+    courses?: Section[];
+    languages: LanguageLevel[];
+    skills: string[];
+}
+
+export const resumeSample = {
+
 }

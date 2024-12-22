@@ -26,8 +26,8 @@
     "openai": "^4.76.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.9.155",
-    "react": "^19.0.0-rc-66855b96-20241106",
-    "react-dom": "^19.0.0-rc-66855b96-20241106",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-dropzone": "^14.3.5",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"

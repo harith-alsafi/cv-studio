@@ -1,9 +1,3 @@
-info:
-  name: |
-    \name{__NAME__}
-  about: |
-    \about{__ABOUT__}
-
 document:
   start: |
     \documentclass{article}
@@ -11,34 +5,38 @@ document:
     \begin{document}
   end: |
     \end{document}
-  skip_s: |
-    \smallskip
 
 sections:
-  - name: Education
+  - type: information
+    order: 0
+    content: |
+      \name{__NAME__}
+  - type: education
+    order: 1
     header: |
       \section{Section 1 Name}
     loop: |
       \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
       __CONTENT__
-    loop-content: |
-      \begin{itemize}
-      __CONTENT__
-      \end{itemize}
+    bulletPoints: 
+      header: |
+        \begin{itemize}
+      loop: |
+        \item __BULLET__
+      footer: |
+        \end{itemize}
     footer: |
       \medskip
     after-each: |
       \tightdivider
-  - header: |
+  - type: skills
+    order: 2
+    header: |
       \section{Section 2 Name}
     loop: |
-      This is the content of section 2.
+      \cvtag{__SKILL__}
     footer: |
-      \smallskip
-  - header: |
-      \section{Section 3 Name}
-    loop: |
-      This is the content of section 3.
-    footer: |
-      \smallskip
+      \medskip
+    after-each: |
+      \tightdivider
   
