@@ -1,4 +1,4 @@
-// src/api/parse-resu,e/route.ts
+// src/api/parse-resume/route.ts
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
@@ -8,17 +8,29 @@ const openai = new OpenAI({
 
 export async function POST(request: Request) {
   try {
-    const { text } = await request.json();
+    const { text, jobDescription } = await request.json();
+
+    // Base system message
+    let systemMessage = "You are an expert resume parser. Extract relevant information from the resume into the specified JSON schema format.";
+    
+    // Add job description context if provided
+    if (jobDescription) {
+      systemMessage += " The extracted information should be tailored to highlight aspects that are most relevant to the provided job description. Focus on skills, experiences, and qualifications that align with the job requirements.";
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
+          role: "system",
+          content: systemMessage
+        },
+        {
           role: "user",
           content: [
             {
               type: "text",
-              text: text
+              text: `Resume Content:\n${text}${jobDescription ? `\n\nJob Description:\n${jobDescription}` : ''}`
             }
           ]
         },
@@ -49,7 +61,7 @@ export async function POST(request: Request) {
               },
               about: {
                 type: "string",
-                description: "A brief description about the individual."
+                description: "A brief description about the individual, highlighting relevant experience for the target role if a job description is provided."
               },
               email: {
                 type: "string",
@@ -77,28 +89,28 @@ export async function POST(request: Request) {
               },
               education: {
                 type: "array",
-                description: "List of educational qualifications.",
+                description: "List of educational qualifications, prioritized based on relevance to the job description if provided.",
                 items: {
                   "$ref": "#/$defs/section"
                 }
               },
               experience: {
                 type: "array",
-                description: "List of work experience.",
+                description: "List of work experience, prioritized based on relevance to the job description if provided.",
                 items: {
                   "$ref": "#/$defs/section"
                 }
               },
               projects: {
                 type: "array",
-                description: "List of projects.",
+                description: "List of projects, prioritized based on relevance to the job description if provided.",
                 items: {
                   "$ref": "#/$defs/section"
                 }
               },
               courses: {
                 type: "array",
-                description: "List of completed courses.",
+                description: "List of completed courses, prioritized based on relevance to the job description if provided.",
                 items: {
                   "$ref": "#/$defs/section"
                 }
@@ -112,7 +124,7 @@ export async function POST(request: Request) {
               },
               skills: {
                 type: "array",
-                description: "List of skills possessed by the individual.",
+                description: "List of skills possessed by the individual, prioritized based on relevance to the job description if provided.",
                 items: {
                   type: "string"
                 }
@@ -148,13 +160,13 @@ export async function POST(request: Request) {
                     anyOf: [
                       {
                         type: "string",
-                        description: "The content of the section as a single string."
+                        description: "The content of the section as a single string, highlighting aspects relevant to the job description if provided."
                       },
                       {
                         type: "array",
                         items: {
                           type: "string",
-                          description: "The content of the section as an array of strings."
+                          description: "The content of the section as an array of strings, highlighting aspects relevant to the job description if provided."
                         }
                       }
                     ]
