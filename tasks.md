@@ -1,6 +1,7 @@
 # Tasks
 
 ## Harith Ibraim
+- Update Schema
 - Implement file upload functionality.
 - Develop a PDF viewer.
 - Update schema for GPT integration.
