@@ -1,43 +1,42 @@
-%%%B: DOC.START
+\documentclass{article}
+\usepackage{lipsum}
 \begin{document}
-%%%E: DOC.START
 
-%%%B: INFO.NAME
-\name{__NAME__}
-%%%E: INFO.NAME
+\name{John Doe}
 
-%%%B: DOC.SKIP_S
-\smallskip
-%%%E: DOC.SKIP_S
+\section{Education}
 
-%%%B: INFO.ABOUT
-\cvsection{\faBlackTie \, About me}
-__ABOUT__
-%%%E: INFO.ABOUT
-
-%%%B: SECTION.EXPERIENCE.HEADER
-\cvsection{\faBriefcase \, Experience}
-%%%E: SECTION.EXPERIENCE.HEADER
-
-%%%B: SECTION.EXPERIENCE.LOOP
-\cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
+\cvevent{Bachelor of Science in Computer Science}{University of Example}{August 2016 - May 2020}{Example City, EX}
 \begin{itemize}
-__CONTENT__
+\item Relevant coursework: Data Structures, Algorithms, Web Development.
+\item GPA: 3.5
 \end{itemize}
-%%%E: SECTION.EXPERIENCE.LOOP
 
-%%%B: SECTION.EXPERIENCE.CONTENT
-\item __CONTENT__
-%%%E: SECTION.EXPERIENCE.CONTENT
-
-%%%B: SECTION.EXPERIENCE.AFTER_EACH
 \tightdivider
-%%%E: SECTION.EXPERIENCE.AFTER_EACH
 
-%%%B: SECTION.EXPERIENCE.FOOTER
+\cvevent{High School Diploma}{Example High School}{August 2012 - May 2016}{Example City, EX}
+Graduated with honors.
 \medskip
-%%%E: SECTION.EXPERIENCE.FOOTER
 
-%%%B: DOC.END
+\section{Skills}
+
+\cvtag{JavaScript}
+\tightdivider
+
+\cvtag{TypeScript}
+\tightdivider
+
+\cvtag{React}
+\tightdivider
+
+\cvtag{Node.js}
+\tightdivider
+
+\cvtag{Python}
+\tightdivider
+
+\cvtag{SQL}
+
+\medskip
+
 \end{document}
-%%%E: DOC.END

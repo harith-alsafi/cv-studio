@@ -9,8 +9,15 @@ document:
 sections:
   - type: information
     order: 0
-    content: |
-      \name{__NAME__}
+    contents: 
+      - type: name
+        order: 0
+        content: |
+          \name{__NAME__}
+      - type: address
+        order: 1
+        content: |
+          \name{__ADDRESS__}
   - type: education
     order: 1
     header: |
