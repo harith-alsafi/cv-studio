@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Resume } from '@/types/resume';
 import { extractTextFromFile } from '@/lib/file-read-new';
+import { generateResumePDF } from '@/lib/pdf-gen-basic';
+import { Download } from 'lucide-react';
 
 interface OpenAIResponse {
   role: string;
@@ -18,18 +20,41 @@ export default function ResumeParsePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [jobDescription, setJobDescription] = useState<string>('');
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+
+  const handleGeneratePDF = () => {
+    if (!parsedData) return;
+    
+    try {
+      const pdfDataUrl = generateResumePDF(parsedData);
+      setPdfPreviewUrl(pdfDataUrl);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      setError('Failed to generate PDF');
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    if (!pdfPreviewUrl) return;
+    
+    const link = document.createElement('a');
+    link.href = pdfPreviewUrl;
+    link.download = `${parsedData?.name || 'resume'}_parsed.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const onDrop = async (acceptedFiles: File[]) => {
     setLoading(true);
     setError(null);
     setRawResponse(null);
     setParsedData(null);
+    setPdfPreviewUrl(null);
     
     try {
       const file = acceptedFiles[0];
       const text = await extractTextFromFile(file);
-
-      // Log the raw text content
       console.log('Raw file content:', text);
 
       const response = await fetch('/api/parse-resume', {
@@ -83,7 +108,6 @@ export default function ResumeParsePage() {
     <main className="container mx-auto p-4 text-black">
       <h1 className="text-2xl font-bold mb-4">Resume Parser</h1>
       
-      {/* Job Description Input */}
       <div className="mb-6">
         <label htmlFor="jobDescription" className="block text-sm font-medium mb-2">
           Job Description (Optional)
@@ -121,9 +145,19 @@ export default function ResumeParsePage() {
       )}
 
       {parsedData && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Parsed Resume Data</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <>
+          <div className="mt-8 flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Parsed Resume Data</h2>
+            <button
+              onClick={handleGeneratePDF}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+            >
+              <Download size={20} />
+              Generate PDF
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {/* JSON View */}
             <div className="bg-white p-6 rounded-lg shadow">
               <pre className="whitespace-pre-wrap break-words">
@@ -163,6 +197,28 @@ export default function ResumeParsePage() {
                 </div>
               ))}
             </div>
+          </div>
+        </>
+      )}
+
+      {pdfPreviewUrl && (
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Generated PDF</h2>
+            <button
+              onClick={handleDownloadPDF}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+            >
+              <Download size={20} />
+              Download PDF
+            </button>
+          </div>
+          <div className="border rounded-lg overflow-hidden">
+            <iframe 
+              src={pdfPreviewUrl} 
+              className="w-full h-[800px]"
+              title="PDF Preview"
+            />
           </div>
         </div>
       )}
