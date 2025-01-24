@@ -18,10 +18,10 @@ sections:
         order: 1
         content: |
           \name{__ADDRESS__}
-  - type: education
-    order: 1
+  - type: experience
+    order: 2
     header: |
-      \section{Section 1 Name}
+      \section{Experience}
     loop: |
       \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
       __CONTENT__
@@ -36,12 +36,42 @@ sections:
       \medskip
     after-each: |
       \tightdivider
-  - type: skills
-    order: 2
+  - type: education
+    order: 1
     header: |
-      \section{Section 2 Name}
+      \section{Education}
+    loop: |
+      \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
+      __CONTENT__
+    bulletPoints: 
+      header: |
+        \begin{itemize}
+      loop: |
+        \item __BULLET__
+      footer: |
+        \end{itemize}
+    footer: |
+      \medskip
+    after-each: |
+      \tightdivider
+  
+  - type: skills
+    order: 3
+    header: |
+      \section{Skills}
     loop: |
       \cvtag{__SKILL__}
+    footer: |
+      \medskip
+    after-each: |
+      \tightdivider
+  
+  - type: languages
+    order: 4
+    header: |
+      \section{Languages}
+    loop: |
+      \cvskill{__NAME__}{__LEVEL__}
     footer: |
       \medskip
     after-each: |

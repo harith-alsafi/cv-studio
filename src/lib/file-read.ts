@@ -1,7 +1,8 @@
 import mammoth from 'mammoth';
-import { getDocument } from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist';
 import { promises as fs } from 'fs';
 import YAML from 'yaml';
+import { readFileSync } from 'fs';
 
 async function readDoc(filePath: string): Promise<string> {
     const fullText = (await mammoth.extractRawText({ path: filePath })).value;
@@ -13,7 +14,7 @@ async function readPdf(filePath: string): Promise<string> {
   const pdfData = new Uint8Array(fileData);
 
   try {
-    const pdf = await getDocument({ data: pdfData }).promise;
+    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
 
     const numPages = pdf.numPages;
     const pageTextPromises: any[] = [];
@@ -50,14 +51,14 @@ export async function readFile(filePath: string): Promise<string> {
       return await readDoc(filePath);
     } 
     else if (filePath.endsWith('.txt')) {
-        return await readText(filePath);
+      return await readText(filePath);
     }
     else {
       throw new Error('File type not supported');
     }
 }
 
-export async function readYaml(filePath: string): Promise<Record<string, any>> {
-    const fileData = await fs.readFile(filePath, 'utf-8');
-    return YAML.parse(fileData) as Record<string, any>;
+export function readYaml(filePath: string): Record<string, any> {
+  const fileData = readFileSync(filePath, 'utf-8');
+  return YAML.parse(fileData) as Record<string, any>;
 }

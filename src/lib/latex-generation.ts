@@ -38,7 +38,7 @@ const latexExpectedArgs: Record<string, (ExpectedArg<Section> | ExpectedArg<Resu
     ]
 }
 
-function extractArguments(type: string,template: string): LatexArgItem {
+function extractArguments(template: string): LatexArgItem {
     const args = new Map<string, string | null>();
     const regex = /__([A-Z_]+)__/g;
     let match;
@@ -80,7 +80,7 @@ function extractArguments(type: string,template: string): LatexArgItem {
 function processLatexLoopItem(type:string, data: any): LatexLoopItem {
     return {
         header: data.header,
-        loop: extractArguments(type, data.loop),
+        loop: extractArguments(data.loop),
         footer: data.footer,
         afterEach: data['after-each'],
     };
@@ -100,7 +100,7 @@ export function parseYamlTemplate(yamlData: Record<string, any>): LatexTemplate 
                 contents: latexSection.contents.map((content: any) => ({
                     order: content.order,
                     type: content.type,
-                    content: extractArguments(content.type, content.content),
+                    content: extractArguments(content.content),
                 })),
                 getLatexString(resume: Resume) {
                     let processedContent = '';

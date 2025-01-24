@@ -1,59 +1,8 @@
+import { readYaml } from "@/lib/file-read";
 import { generateLatexDocument, parseYamlTemplate } from "@/lib/latex-generation";
 import { Resume } from "@/types/resume";
-import YAML from 'yaml';
-
-
-const yamlString = `
-document:
-  start: |
-    \\documentclass{article}
-    \\usepackage{lipsum}
-    \\begin{document}
-  end: |
-    \\end{document}
-
-sections:
-  - type: information
-    order: 0
-    contents: 
-      - type: name
-        order: 0
-        content: |
-          \\name{__NAME__}
-      - type: address
-        order: 1
-        content: |
-          \\name{__ADDRESS__}
-  - type: education
-    order: 1
-    header: |
-      \\section{Education}
-    loop: |
-      \\cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
-      __CONTENT__
-    bulletPoints: 
-      header: |
-        \\begin{itemize}
-      loop: |
-        \\item __BULLET__
-      footer: |
-        \\end{itemize}
-    footer: |
-      \\medskip
-    after-each: |
-      \\tightdivider
-  - type: skills
-    order: 2
-    header: |
-      \\section{Skills}
-    loop: |
-      \\cvtag{__SKILL__}
-    footer: |
-      \\medskip
-    after-each: |
-      \\tightdivider
-  
-`
+import { describe, it, expect } from 'vitest';
+import path from 'path';
 
 const resumeSample: Resume = {
     name: 'John Doe',
@@ -134,16 +83,13 @@ const resumeSample: Resume = {
     ]
 }
 
-try {
-    // Parse the YAML string
-    const parsedDocument = YAML.parse(yamlString) as Record<string, any>;
-    
-    const parsedYaml = parseYamlTemplate(parsedDocument);
-    
-    const latexString = generateLatexDocument(parsedYaml, resumeSample);
-    console.log(latexString);
-    // Now parsedDocument is a JavaScript object that you can work with
-    // console.dir(parsedYaml, { depth: null, colors: true });
-  } catch (error) {
-    console.error('Error parsing YAML:', error);
-  }
+
+describe('generateLatexDocument', () => {
+    it('should generate a LaTeX document from a resume object', () => {
+        const templatePath = path.join(__dirname, '..','specification.yaml');
+        const template = readYaml(templatePath);
+        const latexTemplate = parseYamlTemplate(template);
+        const latexDocument = generateLatexDocument(latexTemplate, resumeSample);
+        console.log(latexDocument);
+        
+}); });
