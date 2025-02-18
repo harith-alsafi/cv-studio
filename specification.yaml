@@ -7,47 +7,68 @@ document:
     \end{document}
 
 sections:
-  - type: information
+  - type: information # contains name, email, address, about me section ..etc 
     order: 0
     contents: 
-      - type: name
+
+      - type: about
         order: 0
         content: |
-          \name{__NAME__}
-      - type: address
+          \section{About Me}
+          __ABOUT__
+
+      - type: name
         order: 1
+        content: | # __NAME__ is the argument that eill be replaced with the actual name, name of argument should be the same as the 'type' but capitalised
+          \header{__NAME__}
+
+      - type: title
+        order: 2
         content: |
-          \name{__ADDRESS__}
-  - type: experience
-    order: 2
-    header: |
-      \section{Experience}
-    loop: |
-      \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
-      __CONTENT__
-    bulletPoints: 
-      header: |
-        \begin{itemize}
-      loop: |
-        \item __BULLET__
-      footer: |
-        \end{itemize}
-    footer: |
-      \medskip
-    after-each: |
-      \tightdivider
+          \header{__TITLE__}
+
+      - type: email
+        order: 3
+        content: |
+          \header{__EMAIL__}
+
+      - type: phone
+        order: 4
+        content: |
+          \header{__PHONE__}
+
+      - type: portfolio
+        order: 5
+        content: |
+          \header{__PORTFOLIO__}
+  
+      - type: linkedin
+        order: 6
+        content: |
+          \header{__LINKEDIN__}
+      
+      - type: github
+        order: 7
+        content: |
+          \header{__GITHUB__}
+
+      - type: address
+        order: 8
+        content: |
+          \header{__ADDRESS__}
+
   - type: education
     order: 1
-    header: |
+    header: | # title of the section
       \section{Education}
-    loop: |
+    loop: | # the loop element 
       \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
       __CONTENT__
-    bulletPoints: 
+    bulletPoints: # this is an optional field and either or the bulletPoints or paragraph content should be present
       header: |
         \begin{itemize}
-      loop: |
-        \item __BULLET__
+      loop: | # this is a content of a singular bullet point
+        \item __BULLET__ 
       footer: |
         \end{itemize}
     footer: |
@@ -55,8 +76,65 @@ sections:
     after-each: |
       \tightdivider
   
-  - type: skills
+  - type: experience
+    order: 2
+    header: | # title of the section
+      \section{Experience}
+    loop: | # the loop element 
+      \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
+      __CONTENT__
+    bulletPoints: # this is an optional field and either or the bulletPoints or paragraph content should be present
+      header: |
+        \begin{itemize}
+      loop: | # this is a content of a singular bullet point
+        \item __BULLET__ 
+      footer: |
+        \end{itemize}
+    footer: |
+      \medskip
+    after-each: |
+      \tightdivider
+
+  - type: projects
     order: 3
+    header: | # title of the section
+      \section{Project}
+    loop: | # the loop element 
+      \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
+      __CONTENT__
+    bulletPoints: # this is an optional field and either or the bulletPoints or paragraph content should be present
+      header: |
+        \begin{itemize}
+      loop: | # this is a content of a singular bullet point
+        \item __BULLET__ 
+      footer: |
+        \end{itemize}
+    footer: |
+      \medskip
+    after-each: |
+      \tightdivider
+  
+  - type: courses
+    order: 4
+    header: | # title of the section
+      \section{Courses}
+    loop: | # the loop element 
+      \cvevent{__TITLE__}{__ORGANIZATION__}{__START_DATE__ - __END_DATE__}{__LOCATION__}
+      __CONTENT__
+    bulletPoints: # this is an optional field and either or the bulletPoints or paragraph content should be present
+      header: |
+        \begin{itemize}
+      loop: | # this is a content of a singular bullet point
+        \item __BULLET__ 
+      footer: |
+        \end{itemize}
+    footer: |
+      \medskip
+    after-each: |
+      \tightdivider
+
+  - type: skills
+    order: 5
     header: |
       \section{Skills}
     loop: |
@@ -67,7 +145,7 @@ sections:
       \tightdivider
   
   - type: languages
-    order: 4
+    order: 6
     header: |
       \section{Languages}
     loop: |

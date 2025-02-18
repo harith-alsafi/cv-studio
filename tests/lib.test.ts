@@ -90,6 +90,8 @@ describe('generateLatexDocument', () => {
         const template = readYaml(templatePath);
         const latexTemplate = parseYamlTemplate(template);
         const latexDocument = generateLatexDocument(latexTemplate, resumeSample);
+        // assert
+        
         console.log(latexDocument);
         
 }); });
