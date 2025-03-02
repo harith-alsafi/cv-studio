@@ -1,60 +1,32 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { Resume } from '@/types/resume';
+import { LatexTemplate, LatexTemplateData } from '@/types/latex-template';
+import { generateLatexPdf } from '@/lib/latex-generation';
 
 export async function POST(req: Request) {
     try {
-        // Parse incoming JSON
-        const { text } = await req.json();
-        if (!text) {
-            return NextResponse.json({ error: 'Text is required' }, { status: 400 });
+        // Parse request body
+        const { resume, template } : { resume: Resume; template: LatexTemplateData } = await req.json();
+        
+        if (!resume || !template) {
+            return NextResponse.json({ error: 'Missing resume or template' }, { status: 400 });
         }
 
-        // Paths
-        const templatePath = path.join(process.cwd(), 'public', 'template.tex');
-        const tempDir = path.join(process.cwd(), 'tmp');
-        const outputPath = path.join(tempDir, 'temp.pdf');
-
-        // Ensure temporary directory exists
-        await fs.mkdir(tempDir, { recursive: true });
-
-        // Read LaTeX template
-        const latexTemplate = await fs.readFile(templatePath, 'utf-8');
-
-        // Replace placeholder in the template
-        const processedLatex = latexTemplate.replace('PLACEHOLDER_TEXT', text);
-
-        // Write processed LaTeX to a temporary file
-        const latexFilePath = path.join(tempDir, 'temp.tex');
-        await fs.writeFile(latexFilePath, processedLatex);
-
-        // Compile LaTeX to PDF using `pdflatex`
-        await new Promise((resolve, reject) => {
-            exec(
-                `bash -c "pdflatex -interaction=nonstopmode -output-directory=${tempDir} ${latexFilePath}"`,
-                (error, stdout, stderr) => {
-                    if (error) {
-                        console.error('pdflatex error:', stderr);
-                        return reject(new Error('Failed to compile LaTeX'));
-                    }
-                    resolve(stdout);
-                }
-            );
-        });
-
-        // Read the generated PDF
-        const pdfBuffer = await fs.readFile(outputPath);
-
-        // Clean up temporary files
-        await fs.rm(tempDir, { recursive: true, force: true });
-
-        // Return the PDF as a response
+        const templateObject = new LatexTemplate(template);
+        
+        // Generate LaTeX document
+        const latexDocument = templateObject.generateLatex(resume);
+        
+        // Generate PDF from LaTeX document
+        const pdfBuffer = await generateLatexPdf(latexDocument);
+        
+        // Return PDF as response
         return new NextResponse(pdfBuffer, {
+            status: 200,
             headers: {
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': 'attachment; filename="temp.pdf"',
-            },
+                'Content-Disposition': 'attachment; filename="resume.pdf"'
+            }
         });
     } catch (error) {
         console.error('Error generating PDF:', error);

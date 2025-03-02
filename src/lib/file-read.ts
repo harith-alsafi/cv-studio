@@ -1,3 +1,4 @@
+"use server"
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import { promises as fs } from 'fs';
@@ -58,7 +59,7 @@ export async function readFile(filePath: string): Promise<string> {
     }
 }
 
-export function readYaml(filePath: string): Record<string, any> {
+export async function readYaml(filePath: string): Promise<Record<string, any>> {
   const fileData = readFileSync(filePath, 'utf-8');
   return YAML.parse(fileData) as Record<string, any>;
 }

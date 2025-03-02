@@ -7,10 +7,12 @@ import { Textarea } from '@/components/ui/textarea'
 import FileUpload from '@/components/file-upload'
 import PDFViewer from '@/components/pdf-viewer'
 import { TemplateType } from '../../types/templates'
-import { Resume } from '@/types/resume'
+import { Resume, resumeSample } from '@/types/resume'
 import { extractTextFromFile } from '@/lib/file-read-new'
 import { generateResumePDF } from '@/lib/pdf-gen-basic'
 import { Download, Loader2 } from 'lucide-react'
+import { readYaml } from '@/lib/file-read'
+import { parseYamlTemplate } from '@/lib/latex-template'
 
 interface OpenAIResponse {
   role: string
@@ -111,9 +113,27 @@ export default function CVEditor() {
         const parsedContent = JSON.parse(data.content) as Resume
         setParsedData(parsedContent)
 
-        // Generate PDF using the parsed data
-        const pdfDataUrl = generateResumePDF(parsedContent)
-        setGeneratedPDF(pdfDataUrl)
+        const parsedYaml = await readYaml('public/template1.yaml');
+        const selectedTemplate = parseYamlTemplate(parsedYaml);
+
+        // Send data to the API for PDF generation
+        const response = await fetch('/api/pdf-gen', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ resume: parsedContent, template: selectedTemplate }), // Ensure `selectedTemplate` is available
+        });
+
+        console.log(response);
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const pdfDataUrl = URL.createObjectURL(blob);
+          setGeneratedPDF(pdfDataUrl);
+        } else {
+          console.error('Failed to generate PDF:', await response.text());
+        }
       }
     } catch (error) {
       console.error('Error:', error)
