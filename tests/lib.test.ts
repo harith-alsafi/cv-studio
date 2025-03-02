@@ -8,13 +8,16 @@ const resumeSample: Resume = {
     name: 'John Doe',
     title: 'Software Developer',
     about: 'I am a software developer with experience in JavaScript, TypeScript, and Node.js.',
-    email: 'john@gmail.com',
-    phone: '123-456-7890',
+    email: 'youremail@yourdomain.com',
+    phone: '0541 999 99 99',
+    address: 'Your Location',
+    github: 'https://github.com/yourusername',
+    linkedin: 'https://linkedin.com/in/yourusername',
     education: [
         {
             title: 'Bachelor of Science in Computer Science',
             content: [
-                'Relevant coursework: Data Structures, Algorithms, Web Development.',
+                'Data Structures, Algorithms, Web Development',
                 'GPA: 3.5'
             ],
             startDate: 'August 2016',
@@ -34,7 +37,11 @@ const resumeSample: Resume = {
     experience: [
         {
             title: 'Software Developer',
-            content: 'Developed web applications using React and Node.js.',
+            content: [
+                'Worked on a team to develop a mobile application using React Native.',
+                'Implemented new features and fixed bugs.',
+
+            ],
             startDate: 'June 2020',
             endDate: 'Present',
             organization: 'Tech Company',
@@ -86,7 +93,7 @@ const resumeSample: Resume = {
 
 describe('generateLatexDocument', () => {
     it('should generate a LaTeX document from a resume object', () => {
-        const templatePath = path.join(__dirname, '..','specification.yaml');
+        const templatePath = path.join(__dirname, '..','template1.yaml');
         const template = readYaml(templatePath);
         const latexTemplate = parseYamlTemplate(template);
         const latexDocument = generateLatexDocument(latexTemplate, resumeSample);

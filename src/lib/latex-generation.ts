@@ -60,8 +60,8 @@ function extractArguments(template: string): LatexArgItem {
                 //     throw new Error(`Argument ${key} is required but not set`);
                 // }
                 if (value !== null) {
-                    processedTemplate = processedTemplate.replace(`__${key.toUpperCase()}__`, value);
-
+                    const regex = new RegExp(`__${key.toUpperCase()}__`, 'g');
+                    processedTemplate = processedTemplate.replace(regex, value);
                 }
             });
             return processedTemplate;
@@ -116,7 +116,7 @@ export function parseYamlTemplate(yamlData: Record<string, any>): LatexTemplate 
                                 content.content.setArg(content.type, value as string);
                                 processedContent += content.content.getLatexString();
                             }
-                            processedContent += '\n';
+                            // processedContent += '\n';
                         }   
                     }
                     return processedContent;
@@ -145,9 +145,9 @@ export function parseYamlTemplate(yamlData: Record<string, any>): LatexTemplate 
                                 let bulletPointsContent = this.bulletPoints.header + '\n';
                                 for(const bullet of section.content){
                                     this.bulletPoints.loop.setArg('bullet', bullet);
-                                    bulletPointsContent += this.bulletPoints.loop.getLatexString() + '\n';
+                                    bulletPointsContent += this.bulletPoints.loop.getLatexString();
                                     if (bullet !== section.content[section.content.length - 1]) {
-                                        bulletPointsContent += this.bulletPoints.afterEach ? this.bulletPoints.afterEach + '\n' : '';
+                                        bulletPointsContent += this.bulletPoints.afterEach ? this.bulletPoints.afterEach : '';
                                     }
                                 }
                                 bulletPointsContent += this.bulletPoints.footer + '\n';
@@ -205,9 +205,9 @@ export function parseYamlTemplate(yamlData: Record<string, any>): LatexTemplate 
                         let processedContent = this.header + '\n';
                         for (const skill of skills) {
                             this.loop.setArg('skill', skill);
-                            processedContent += this.loop.getLatexString() + '\n';
+                            processedContent += this.loop.getLatexString() ;
                             if (skill !== skills[skills.length - 1]) {
-                                processedContent += this.afterEach ? this.afterEach + '\n' : '';
+                                processedContent += this.afterEach ? this.afterEach : '';
                             }
                         }
                         processedContent += this.footer;

@@ -191,9 +191,10 @@ sections:
       - type: name
         order: 1
         content: | # __NAME__ is the argument that eill be replaced with the actual name, name of argument should be the same as the 'type' but capitalised
-        \textbf{__NAME__}
-        \vspace{0.3 cm}
-        \normalsize
+          \textbf{__NAME__}
+          \vspace{0.3 cm}
+          \normalsize
+          \newline
       - type: address
 
         order: 2
@@ -222,7 +223,7 @@ sections:
       - type: linkedin
         order: 5
         content: |
-          \mbox{\hrefWithoutArrow{__LINKEDIN__}{{\footnotesize\faLinkedinIn}\hspace*{0.13cm}Linkedin}}%
+          \mbox{\hrefWithoutArrow{__LINKEDIN__}{{\footnotesize\faLinkedinIn}\hspace*{0.13cm}yourusername}}%
           \kern 0.25 cm%
           \AND%
           \kern 0.25 cm%
@@ -230,13 +231,14 @@ sections:
       - type: github
         order: 6
         content: |
-          \mbox{\hrefWithoutArrow{__GITHUB__}{{\footnotesize\faGithub}\hspace*{0.13cm}GitHub}}%
+          \mbox{\hrefWithoutArrow{__GITHUB__}{{\footnotesize\faGithub}\hspace*{0.13cm}yourusername}}%
           \end{header}
           \vspace{0.3 cm - 0.3 cm}
 
       - type: title
         order: 7
         content: |
+          \end{header}
           \section{__TITLE__}
 
 
@@ -272,16 +274,17 @@ sections:
 
     bulletPoints: # this is an optional field and either or the bulletPoints or paragraph content should be present
       header: |
-        \begin{itemize}
+         
       loop: | # this is a content of a singular bullet point
-        \item __BULLET__ 
+        __BULLET__ 
       footer: |
-        \end{itemize}
+         
+      after-each: |
+        , 
     footer: |
       \medskip
     after-each: |
       \tightdivider
-  
   - type: experience
     order: 2
     header: | # title of the section
@@ -292,7 +295,7 @@ sections:
         __START_DATE__ – __END_DATE__
         }
         \textbf{__ORGANIZATION__}, __TITLE__
-        \newline __CONTENT__
+        __CONTENT__
 
 
     bulletPoints: # this is an optional field and either or the bulletPoints or paragraph content should be present
@@ -303,8 +306,10 @@ sections:
       footer: |
         \end{itemize}
     footer: |
+      \end{twocolentry}
       \medskip
     after-each: |
+      \end{twocolentry}
       \vspace{0.2 cm}
 
 
@@ -331,11 +336,12 @@ sections:
         \vspace{0.2 cm}
 
     footer: |
+      \end{twocolentry}
       \medskip
-    after-each: | # I got nothing after each
-      NA                           
 
-  
+    after-each: |
+      \end{twocolentry}
+                        
   - type: courses
     order: 4
     header: | # title of the section
@@ -353,8 +359,10 @@ sections:
       footer: |
         \end{itemize}
     footer: |
+      \end{twocolentry}
       \medskip
     after-each: |
+      \end{twocolentry}
       \tightdivider
 
   - type: skills
@@ -367,9 +375,6 @@ sections:
       {__SKILL__}, 
     footer: |
       \end{onecolentry}
-
-    after-each: |
-      NA  
   
   - type: languages
     order: 6
@@ -378,9 +383,7 @@ sections:
       \begin{onecolentry}
 
     loop: |
-      \cvskill{__NAME__}{__LEVEL__}
+      \textbf{__NAME__}: __LEVEL__
     footer: |
       \end{onecolentry}
-    after-each: |
-      NA
   
