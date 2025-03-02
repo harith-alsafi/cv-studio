@@ -1,5 +1,5 @@
 import { readYaml } from "@/lib/file-read";
-import { generateLatexDocument, parseYamlTemplate } from "@/lib/latex-generation";
+import { generateLatexDocument, generateLatexPdf, parseYamlTemplate } from "@/lib/latex-generation";
 import { Resume } from "@/types/resume";
 import { describe, it, expect } from 'vitest';
 import path from 'path';
@@ -92,13 +92,15 @@ const resumeSample: Resume = {
 
 
 describe('generateLatexDocument', () => {
-    it('should generate a LaTeX document from a resume object', () => {
+    it('should generate a LaTeX document from a resume object', async () => {
         const templatePath = path.join(__dirname, '..','template1.yaml');
         const template = readYaml(templatePath);
         const latexTemplate = parseYamlTemplate(template);
         const latexDocument = generateLatexDocument(latexTemplate, resumeSample);
         // assert
         
-        console.log(latexDocument);
+        // console.log(latexDocument);
+
+        await generateLatexPdf(latexDocument);
         
 }); });

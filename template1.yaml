@@ -232,7 +232,6 @@ sections:
         order: 6
         content: |
           \mbox{\hrefWithoutArrow{__GITHUB__}{{\footnotesize\faGithub}\hspace*{0.13cm}yourusername}}%
-          \end{header}
           \vspace{0.3 cm - 0.3 cm}
 
       - type: title

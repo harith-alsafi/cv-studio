@@ -2,6 +2,7 @@ import { ExpectedArg, LatexArgItem, LatexInformation, LatexLanguage, LatexLoopIt
 import { LanguageLevel, Resume, Section } from "@/types/resume";
 import { exec } from 'child_process';
 import { promises as fs } from 'fs';
+import * as fss from 'fs';
 import path from 'path';
 
 const sectionExpectedArgs:  ExpectedArg<Section>[] = [
@@ -246,11 +247,16 @@ export function generateLatexDocument(template: LatexTemplate, resume: Resume): 
 }
 
 
-export async function generateLatexPdf(latexDocument: string) {
+export async function generateLatexPdf(latexDocument: string): Promise<Buffer<ArrayBufferLike>> {
     try {
         // Paths
         const tempDir = path.join(process.cwd(), 'tmp');
         const outputPath = path.join(tempDir, 'temp.pdf');
+
+        // check if tempDir exists and delete it
+        if (fss.existsSync(tempDir)) {
+            await fs.rm(tempDir, { recursive: true, force: true });
+        }
 
         // Ensure temporary directory exists
         await fs.mkdir(tempDir, { recursive: true });
@@ -265,13 +271,17 @@ export async function generateLatexPdf(latexDocument: string) {
                 `bash -c "pdflatex -interaction=nonstopmode -output-directory=${tempDir} ${latexFilePath}"`,
                 (error, stdout, stderr) => {
                     if (error) {
-                        console.error('pdflatex error:', stderr);
-                        return reject(new Error('Failed to compile LaTeX'));
+                        console.error('pdflatex error:', stdout, stderr);
+                        // return reject(new Error(`Failed to compile LaTeX: ${stderr}`));
                     }
                     resolve(stdout);
                 }
             );
         });
+
+        if (!fss.existsSync(outputPath)) {
+            throw new Error('Failed to generate PDF');
+        }
 
         // Read the generated PDF
         const pdfBuffer = await fs.readFile(outputPath);
