@@ -38,11 +38,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <SidebarHeader className="flex items-center justify-between p-4">
             <FileIcon className="h-6 w-6" />
             <SidebarTrigger>
-              {({ collapsed }) => (
+              {/* {({ collapsed }) => (
                 <Button variant="ghost" size="icon">
                   {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
-              )}
+              )} */}
             </SidebarTrigger>
           </SidebarHeader>
           <SidebarContent>

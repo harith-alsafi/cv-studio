@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -20,7 +20,7 @@ interface OpenAIResponse {
   refusal: null | string
 }
 
-export default function CVEditor() {
+function CVEditorContent() {
   const [jobDescription, setJobDescription] = useState('')
   const [resumeFile, setResumeFile] = useState<File | null>(null)
   const [generatedPDF, setGeneratedPDF] = useState<string | null>(null)
@@ -207,4 +207,12 @@ export default function CVEditor() {
       </div>
     </div>
   )
+}
+
+export default function CVEditor() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CVEditorContent />
+    </Suspense>
+  );
 }
