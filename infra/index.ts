@@ -16,6 +16,7 @@ const mongoDbPort = 27017;
 const sshPort = 22;
 const httpPort = 80;
 const httpsPort = 443;
+const appPort = 3000; // The port your NextJS app will run on
 
 // Determine the project root directory (assumes your Pulumi code is in a subfolder)
 const projectRootDir = path.join(__dirname, "..");
@@ -44,7 +45,6 @@ try {
     throw new Error(`Public key file not found at ${publicKeyPath}`);
 }
 
-
 // Create a new key pair
 const keyPair = new aws.ec2.KeyPair(`${projectName}-keypair`, {
     keyName: keyName.replace(".pem", ""),
@@ -54,17 +54,23 @@ const keyPair = new aws.ec2.KeyPair(`${projectName}-keypair`, {
     },
 });
 
-// Create a new security group for the instance
-const securityGroup = new aws.ec2.SecurityGroup(`${projectName}-sg`, {
-    description: "Security group for NextJS application with MongoDB",
+// Get default VPC and subnets information
+const vpc = aws.ec2.getVpcOutput({ default: true });
+const subnets = vpc.id.apply(vpcId => 
+    aws.ec2.getSubnetsOutput({
+        filters: [
+            {
+                name: "vpc-id",
+                values: [vpcId],
+            },
+        ],
+    })
+);
+
+// Create a security group for the ALB
+const albSecurityGroup = new aws.ec2.SecurityGroup(`${projectName}-alb-sg`, {
+    description: "Security group for the Application Load Balancer",
     ingress: [
-        // SSH access
-        {
-            protocol: "tcp",
-            fromPort: sshPort,
-            toPort: sshPort,
-            cidrBlocks: ["0.0.0.0/0"], // Consider restricting this to your IP for better security
-        },
         // HTTP access
         {
             protocol: "tcp",
@@ -90,7 +96,40 @@ const securityGroup = new aws.ec2.SecurityGroup(`${projectName}-sg`, {
         },
     ],
     tags: {
-        Name: `${projectName}-security-group`,
+        Name: `${projectName}-alb-security-group`,
+    },
+});
+
+// Create a security group for the EC2 instance
+const instanceSecurityGroup = new aws.ec2.SecurityGroup(`${projectName}-instance-sg`, {
+    description: "Security group for NextJS application with MongoDB",
+    ingress: [
+        // SSH access
+        {
+            protocol: "tcp",
+            fromPort: sshPort,
+            toPort: sshPort,
+            cidrBlocks: ["0.0.0.0/0"], // Consider restricting this to your IP for better security
+        },
+        // Allow traffic from ALB to the application port
+        {
+            protocol: "tcp",
+            fromPort: appPort,
+            toPort: appPort,
+            securityGroups: [albSecurityGroup.id],
+        },
+    ],
+    egress: [
+        // Allow all outbound traffic
+        {
+            protocol: "-1",
+            fromPort: 0,
+            toPort: 0,
+            cidrBlocks: ["0.0.0.0/0"],
+        },
+    ],
+    tags: {
+        Name: `${projectName}-instance-security-group`,
     },
 });
 
@@ -130,7 +169,26 @@ const instanceProfile = new aws.iam.InstanceProfile(`${projectName}-instance-pro
     role: role.name,
 });
 
-// Create a user data script for instance setup with domain support
+// Create ACM certificate for the domain
+const certificate = new aws.acm.Certificate(`${projectName}-certificate`, {
+    domainName: domainName,
+    validationMethod: "DNS",
+    subjectAlternativeNames: [`www.${domainName}`],
+    tags: {
+        Name: `${projectName}-certificate`,
+    },
+});
+
+// Export the certificate validation details (for manual DNS validation)
+const certificateValidationDomains = certificate.domainValidationOptions.apply(
+    options => options.map(option => ({
+        name: option.resourceRecordName,
+        type: option.resourceRecordType,
+        value: option.resourceRecordValue,
+    }))
+);
+
+// Create a user data script for instance setup without Nginx or Certbot
 const userData = pulumi.interpolate `#!/bin/bash
 # Update packages
 apt-get update
@@ -208,38 +266,10 @@ systemctl daemon-reload
 systemctl restart mongod
 systemctl enable mongod
 
-# Setup Nginx as reverse proxy with domain support
-apt-get install -y nginx
-
-# Install Certbot for SSL
-apt-get install -y certbot python3-certbot-nginx
-
-# Configure Nginx for the domain
-cat > /etc/nginx/sites-available/default << 'EOL'
-server {
-    listen 80;
-    server_name ${domainName} www.${domainName};
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-EOL
-
-systemctl restart nginx
-
 # Run the application for the first time
 cd /opt/${projectName}
 npm run build
 pm2 start npm --name "${projectName}" -- start
-
-# Automatically run certbot after instance is up (no longer commented out)
-certbot --nginx -d ${domainName} -d www.${domainName} --non-interactive --agree-tos --email ${emailAddress}
 `;
 
 // Launch the EC2 instance
@@ -261,8 +291,8 @@ const ami = pulumi.output(aws.ec2.getAmi({
 const instance = new aws.ec2.Instance(`${projectName}-instance`, {
     ami: ami.id,
     instanceType: instanceType,
-    keyName: keyPair.keyName, // Use the key pair name directly from the resource
-    vpcSecurityGroupIds: [securityGroup.id],
+    keyName: keyPair.keyName,
+    vpcSecurityGroupIds: [instanceSecurityGroup.id],
     iamInstanceProfile: instanceProfile.name,
     userData: userData,
     tags: {
@@ -274,26 +304,99 @@ const instance = new aws.ec2.Instance(`${projectName}-instance`, {
     },
 });
 
-// Create an Elastic IP for the instance (recommended for production domains)
-const eip = new aws.ec2.Eip(`${projectName}-eip`, {
-    instance: instance.id,
+// Create a target group for the ALB
+const targetGroup = new aws.lb.TargetGroup(`${projectName}-target-group`, {
+    port: appPort,
+    protocol: "HTTP",
+    vpcId: vpc.id,
+    targetType: "instance",
+    healthCheck: {
+        enabled: true,
+        path: "/",
+        port: appPort.toString(),
+        protocol: "HTTP",
+        healthyThreshold: 3,
+        unhealthyThreshold: 3,
+        timeout: 5,
+        interval: 30,
+        matcher: "200-299",
+    },
     tags: {
-        Name: `${projectName}-eip`,
+        Name: `${projectName}-target-group`,
     },
 });
 
-// Export the instance's public IP and DNS name
-export const instancePublicIp = eip.publicIp;
-export const instancePublicDns = instance.publicDns;
-export const elasticIp = eip.publicIp;
+// Attach the instance to the target group
+const targetGroupAttachment = new aws.lb.TargetGroupAttachment(`${projectName}-tg-attachment`, {
+    targetGroupArn: targetGroup.arn,
+    targetId: instance.id,
+    port: appPort,
+});
+
+// Create the ALB
+const loadBalancer = new aws.lb.LoadBalancer(`${projectName}-alb`, {
+    internal: false,
+    loadBalancerType: "application",
+    securityGroups: [albSecurityGroup.id],
+    subnets: subnets.ids,
+    enableDeletionProtection: false, // Set to true for production
+    tags: {
+        Name: `${projectName}-alb`,
+    },
+});
+
+// Create HTTP listener (for redirect to HTTPS)
+const httpListener = new aws.lb.Listener(`${projectName}-http-listener`, {
+    loadBalancerArn: loadBalancer.arn,
+    port: httpPort,
+    protocol: "HTTP",
+    defaultActions: [{
+        type: "redirect",
+        redirect: {
+            port: httpsPort.toString(),
+            protocol: "HTTPS",
+            statusCode: "HTTP_301",
+        },
+    }],
+});
+
+// Create HTTPS listener (with ACM certificate)
+const httpsListener = new aws.lb.Listener(`${projectName}-https-listener`, {
+    loadBalancerArn: loadBalancer.arn,
+    port: httpsPort,
+    protocol: "HTTPS",
+    sslPolicy: "ELBSecurityPolicy-2016-08",
+    certificateArn: certificate.arn,
+    defaultActions: [{
+        type: "forward",
+        targetGroupArn: targetGroup.arn,
+    }],
+});
+
+// Export important information
+export const instanceId = instance.id;
+export const instancePrivateIp = instance.privateIp;
+export const loadBalancerDnsName = loadBalancer.dnsName;
+export const certificateArn = certificate.arn;
+export const certificateValidation = certificateValidationDomains;
+
+// Domain setup instructions
 export const domainSetupInstructions = pulumi.interpolate`
 # Domain Setup Instructions:
-1. Create an A record for ${domainName} pointing to ${eip.publicIp}
-2. Create another A record for www.${domainName} pointing to ${eip.publicIp}
-3. SSL certificate will be automatically set up. If it fails, SSH into your instance and run:
-   certbot --nginx -d ${domainName} -d www.${domainName} --non-interactive --agree-tos --email ${emailAddress}
+1. Create a CNAME record for ${domainName} pointing to ${loadBalancer.dnsName}
+2. Create another CNAME record for www.${domainName} pointing to ${loadBalancer.dnsName}
+3. To validate your ACM certificate, create the following DNS records:
+${certificateValidationDomains.apply(domains => 
+    domains.map(domain => 
+        `   - ${domain.name} (CNAME) -> ${domain.value}`
+    ).join('\n')
+)}
+
+# Once your certificate is validated (this can take up to 30 minutes), your site will be available at:
+https://${domainName}
+https://www.${domainName}
 `;
 
 // SSH commands for Windows
-export const sshCommand = pulumi.interpolate`ssh -i C:\\Users\\Harit\\.ssh\\${keyName} ubuntu@${eip.publicIp}`;
-export const deployCommand = pulumi.interpolate`ssh -i C:\\Users\\Harit\\.ssh\\${keyName} ubuntu@${eip.publicIp} 'cd /opt/${projectName} && ./deploy.sh'`;
+export const sshCommand = pulumi.interpolate`ssh -i C:\\Users\\Harit\\.ssh\\${keyName} ubuntu@${instance.privateIp}`;
+export const deployCommand = pulumi.interpolate`ssh -i C:\\Users\\Harit\\.ssh\\${keyName} ubuntu@${instance.privateIp} 'cd /opt/${projectName} && ./deploy.sh'`;
