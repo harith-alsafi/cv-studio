@@ -288,20 +288,61 @@ const ami = pulumi.output(aws.ec2.getAmi({
     owners: ["099720109477"], // Canonical
 }));
 
-const instance = new aws.ec2.Instance(`${projectName}-instance`, {
-    ami: ami.id,
-    instanceType: instanceType,
-    keyName: keyPair.keyName,
-    vpcSecurityGroupIds: [instanceSecurityGroup.id],
-    iamInstanceProfile: instanceProfile.name,
-    userData: userData,
-    tags: {
-        Name: `${projectName}-instance`,
-    },
-    rootBlockDevice: {
-        volumeSize: 30, // GB
-        volumeType: "gp3",
-    },
+// Look up existing instance by tag
+const instanceTag = `${projectName}-instance`;
+const existingInstances = pulumi.output(aws.ec2.getInstances({
+    filters: [
+        {
+            name: "tag:Name",
+            values: [instanceTag],
+        },
+        {
+            name: "instance-state-name",
+            values: ["running", "stopped", "pending", "stopping"],
+        },
+    ],
+}));
+
+// Create or reuse instance based on lookup results
+const instance = existingInstances.apply(instances => {
+    if (instances.ids.length > 0) {
+        // Reuse existing instance
+        console.log(`Reusing existing instance: ${instances.ids[0]}`);
+        return new aws.ec2.Instance(instanceTag, {
+            ami: ami.id,
+            instanceType: instanceType,
+            keyName: keyPair.keyName,
+            vpcSecurityGroupIds: [instanceSecurityGroup.id],
+            iamInstanceProfile: instanceProfile.name,
+            tags: {
+                Name: instanceTag,
+            },
+            rootBlockDevice: {
+                volumeSize: 30, // GB
+                volumeType: "gp3",
+            },
+        }, { 
+            import: instances.ids[0] 
+        });
+    } else {
+        // Create new instance
+        console.log("Creating new instance");
+        return new aws.ec2.Instance(instanceTag, {
+            ami: ami.id,
+            instanceType: instanceType,
+            keyName: keyPair.keyName,
+            vpcSecurityGroupIds: [instanceSecurityGroup.id],
+            iamInstanceProfile: instanceProfile.name,
+            userData: userData,
+            tags: {
+                Name: instanceTag,
+            },
+            rootBlockDevice: {
+                volumeSize: 30, // GB
+                volumeType: "gp3",
+            },
+        });
+    }
 });
 
 // Create a target group for the ALB
@@ -372,6 +413,14 @@ const httpsListener = new aws.lb.Listener(`${projectName}-https-listener`, {
         targetGroupArn: targetGroup.arn,
     }],
 });
+
+// Helper function to update existing instance
+const updateInstance = async () => {
+    if (instance) {
+        console.log("Executing deployment script on existing instance");
+        // You could add remote-exec functionality here if needed
+    }
+};
 
 // Export important information
 export const instanceId = instance.id;
