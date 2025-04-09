@@ -1,6 +1,0 @@
-/bin/
-/node_modules/
-
-# AWS credencials
-/infra/harithsami01_accessKeys.csv
-/infra/harithsami01_credentials.csv

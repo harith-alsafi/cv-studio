@@ -1,6 +1,0 @@
-config:
-  aws:region: us-east-1
-  nextjs-infra:keyName: cv-studio.pem
-  nextjs-infra:instanceType: t3.medium
-  nextjs-infra:projectName: cv-studio
-  nextjs-infra:domainName: cvstudio.ai
