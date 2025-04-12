@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 export async function POST(request: Request) {
   try {
-    const { resume, jobDescription }:  { resume: Resume; jobDescription: string } = await request.json();
+    const { resume, jobDescription }:  { resume: Resume | string; jobDescription: string } = await request.json();
 
     // Base system message
     let systemMessage = "You are an expert resume writer. Rephrase the contents of the jobs, courses, projects and education into the specified JSON schema format.";
@@ -18,6 +18,8 @@ export async function POST(request: Request) {
     if (jobDescription) {
       systemMessage += " The rewritten information should be tailored to highlight aspects that are most relevant to the provided job description. Focus on skills, experiences, and qualifications that align with the job requirements.";
     }
+
+    const resumeString = typeof resume === 'string' ? resume : JSON.stringify(resume);
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -31,7 +33,7 @@ export async function POST(request: Request) {
           content: [
             {
               type: "text",
-              text: `Resume Content:\n${JSON.stringify(resume)}${jobDescription ? `\n\nJob Description:\n${jobDescription}` : ''}`
+              text: `Resume Content:\n${resumeString}${jobDescription ? `\n\nJob Description:\n${jobDescription}` : ''}`
             }
           ]
         },

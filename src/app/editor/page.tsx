@@ -113,8 +113,26 @@ function CVEditorContent() {
         const parsedContent = JSON.parse(data.content) as Resume
         setParsedData(parsedContent)
 
-        const parsedYaml = await readYaml('public/template1.yaml');
-        const selectedTemplate = parseYamlTemplate(parsedYaml);
+        const responseLlm = await fetch('/api/resume-gen', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resume: parsedContent,
+            jobDescription,
+          }),
+        });
+
+        if(!responseLlm.ok) {
+          throw new Error('Failed to generate resume')
+        }
+
+        const dataLlm: OpenAIResponse = await responseLlm.json();
+        const resumeDataLlm = JSON.parse(dataLlm.content) as Resume;
+
+        const template = await readYaml('public/template1.yaml');
+        const selectedTemplate = parseYamlTemplate(template);
 
         // Send data to the API for PDF generation
         const response = await fetch('/api/pdf-gen', {
@@ -122,7 +140,7 @@ function CVEditorContent() {
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ resume: parsedContent, template: selectedTemplate }), // Ensure `selectedTemplate` is available
+          body: JSON.stringify({ resume: resumeDataLlm, template: selectedTemplate }), // Ensure `selectedTemplate` is available
         });
 
         console.log(response);

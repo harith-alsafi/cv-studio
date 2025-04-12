@@ -425,3 +425,10 @@ export function getLatexExpectedArgs(): Record<string, (ExpectedArg<Section> | E
         ]
     };
 }
+
+export interface LatexTemplateData {
+    filePath: string;
+    data: Record<string, any>;
+    name: string;
+    // icon: 
+}

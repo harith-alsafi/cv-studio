@@ -47,3 +47,4 @@ next-env.d.ts
 # AWS credencials
 /infra/harithsami01_accessKeys.csv
 /infra/harithsami01_credentials.csv
+/infra/node_modules/*

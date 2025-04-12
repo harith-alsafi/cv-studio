@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.1.1)  2 MAR 2025 16:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2025.1.1)  14 MAR 2025 23:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -732,61 +732,93 @@ LaTeX Font Info:    Trying to load font information for U+fontawesomefree1 on i
 nput line 190.
 
 (/usr/share/texlive/texmf-dist/tex/latex/fontawesome5/ufontawesomefree1.fd)
-LaTeX Font Info:    Trying to load font information for U+fontawesomebrands0 on
- input line 198.
-
-(/usr/share/texlive/texmf-dist/tex/latex/fontawesome5/ufontawesomebrands0.fd)
-LaTeX Font Info:    Font shape `U/fontawesomebrands0/solid/n' in size <8> not a
-vailable
-(Font)              Font shape `U/fontawesomebrands0/regular/n' tried instead o
-n input line 198.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 204.
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 199.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 14.4pt on input line 204.
+(Font)              scaled to size 14.4pt on input line 199.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 204.
+(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 199.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/n' will be
-(Font)              scaled to size 14.4pt on input line 204.
+(Font)              scaled to size 14.4pt on input line 199.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 213.
+(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 208.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/n' will be
-(Font)              scaled to size 10.0pt on input line 213.
+(Font)              scaled to size 10.0pt on input line 208.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 214.
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 209.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
-(Font)              scaled to size 10.0pt on input line 214.
+(Font)              scaled to size 10.0pt on input line 209.
 LaTeX Font Info:    Trying to load font information for TS1+SourceSansPro-TLF o
-n input line 216.
+n input line 211.
 
 (/usr/share/texlive/texmf-dist/tex/latex/sourcesanspro/TS1SourceSansPro-TLF.fd
 File: TS1SourceSansPro-TLF.fd 2020/01/19 (autoinst) Font definitions for TS1/So
 urceSansPro-TLF.
 )
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 216.
+(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 211.
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 10.0pt on input line 216.
+(Font)              scaled to size 10.0pt on input line 211.
 
-Overfull \hbox (4.82617pt too wide) in paragraph at lines 239--240
-[]\T1/SourceSansPro-TLF/regular/n/10 Developed FPGA/SoC-based sys-tems for Cel-
-lu-lar Pas-sive Op-ti-cal Net-works (C-PON),
+Overfull \hbox (3.04556pt too wide) in paragraph at lines 223--225
+[]\T1/SourceSansPro-TLF/bold/n/10 University of Sheffield\T1/SourceSansPro-TLF/
+regular/n/10 , In-te-grated De-sign Project Led drainage de-sign and co-managed
+
+ []
+
+
+Overfull \hbox (1.11949pt too wide) in paragraph at lines 233--235
+\T1/SourceSansPro-TLF/regular/n/10 for im-proved struc-tural per-for-mance, con
+-tribut-ing to sus-tain-able en-gi-neer-ing prac-tices. 
+ []
+
+
+Overfull \hbox (7.2767pt too wide) in paragraph at lines 253--255
+[]\T1/SourceSansPro-TLF/bold/n/10 University of Sheffield\T1/SourceSansPro-TLF/
+regular/n/10 , En-gi-neer-ing: You're Hired! Course Com-plet-ing an employabili
+ty-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 262--265
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 270--273
+
+ []
+
+
+Overfull \hbox (2.3261pt too wide) in paragraph at lines 270--273
+\T1/SourceSansPro-TLF/regular/n/10 Investigated con-crete per-for-mance en-hanc
+e-ments to sup-port sus-tain-able build-ing prac-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 278--281
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 288--291
+
  []
 
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 281.
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 292.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
-(Font)              scaled to size 9.0pt on input line 281.
+(Font)              scaled to size 9.0pt on input line 292.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 281.
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 292.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 9.0pt on input line 281.
+(Font)              scaled to size 9.0pt on input line 292.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 281.
+(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 292.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/n' will be
-(Font)              scaled to size 9.0pt on input line 281.
+(Font)              scaled to size 9.0pt on input line 292.
 
-LaTeX Warning: Reference `LastPage' on page 1 undefined on input line 281.
+LaTeX Warning: Reference `LastPage' on page 1 undefined on input line 292.
 
 [1
 
@@ -794,11 +826,10 @@ LaTeX Warning: Reference `LastPage' on page 1 undefined on input line 281.
 st/fonts/enc/dvips/sourcesanspro/a_emkxm5.enc}{/usr/share/texlive/texmf-dist/fo
 nts/enc/dvips/fontawesome5/fa5free2.enc}{/usr/share/texlive/texmf-dist/fonts/en
 c/dvips/fontawesome5/fa5free1.enc}{/usr/share/texlive/texmf-dist/fonts/enc/dvip
-s/fontawesome5/fa5brands0.enc}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/so
-urcesanspro/a_5ponh6.enc}]
+s/sourcesanspro/a_5ponh6.enc}]
 
 
-LaTeX Warning: Reference `LastPage' on page 2 undefined on input line 339.
+LaTeX Warning: Reference `LastPage' on page 2 undefined on input line 309.
 
 [2] 
 enddocument/afterlastpage: lastpage setting LastPage.
@@ -815,29 +846,28 @@ LaTeX Warning: There were undefined references.
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 
-Package lastpage Warning: Rerun to get the references right on input line 339.
+Package lastpage Warning: Rerun to get the references right on input line 309.
 
  ) 
 Here is how much of TeX's memory you used:
- 16197 strings out of 473584
- 277351 string characters out of 5730880
- 1950905 words of memory out of 5000000
- 38861 multiletter control sequences out of 15000+600000
- 656823 words of font info for 60 fonts, out of 8000000 for 9000
+ 16178 strings out of 473584
+ 276739 string characters out of 5730880
+ 1955905 words of memory out of 5000000
+ 38847 multiletter control sequences out of 15000+600000
+ 656064 words of font info for 58 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,80p,471b,793s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/fontawesome5/FontAwesome5Br
-ands-Regular.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/fontawesome5
-/FontAwesome5Free-Regular.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/fontawesome5/FontAwesome5Free-Solid.pfb></usr/share/texlive/texmf-dist/fonts/t
-ype1/adobe/sourcesanspro/SourceSansPro-Bold.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/adobe/sourcesanspro/SourceSansPro-It.pfb></usr/share/texlive/texmf-
-dist/fonts/type1/adobe/sourcesanspro/SourceSansPro-Regular.pfb>
+ 75i,10n,80p,537b,791s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/fontawesome5/FontAwesome5Fr
+ee-Regular.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/fontawesome5/F
+ontAwesome5Free-Solid.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/sour
+cesanspro/SourceSansPro-Bold.pfb></usr/share/texlive/texmf-dist/fonts/type1/ado
+be/sourcesanspro/SourceSansPro-It.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/adobe/sourcesanspro/SourceSansPro-Regular.pfb>
 Output written on /mnt/DATA/Work/Projects/web-dev/cv-studio/tmp/temp.pdf (2 pag
-es, 226200 bytes).
+es, 216645 bytes).
 PDF statistics:
- 81 PDF objects out of 1000 (max. 8388607)
- 63 compressed objects within 1 object stream
- 8 named destinations out of 1000 (max. 500000)
- 41 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 78 PDF objects out of 1000 (max. 8388607)
+ 62 compressed objects within 1 object stream
+ 9 named destinations out of 1000 (max. 500000)
+ 49 words of extra memory for PDF output out of 10000 (max. 10000000)
 
