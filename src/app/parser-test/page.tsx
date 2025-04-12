@@ -69,6 +69,7 @@ export default function ResumeParsePage() {
       });
 
       if (!response.ok) {
+        console.error('Failed to parse resume:', response)
         throw new Error('Failed to parse resume');
       }
 

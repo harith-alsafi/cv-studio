@@ -104,6 +104,7 @@ function CVEditorContent() {
       })
 
       if (!response.ok) {
+        console.error('Failed to parse resume:', response)
         throw new Error('Failed to parse resume')
       }
 
@@ -125,6 +126,7 @@ function CVEditorContent() {
         });
 
         if(!responseLlm.ok) {
+        console.error('Failed to generate resume:', responseLlm)
           throw new Error('Failed to generate resume')
         }
 
