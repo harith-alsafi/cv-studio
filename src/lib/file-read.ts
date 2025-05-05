@@ -61,7 +61,7 @@ export async function readFile(filePath: string): Promise<string> {
 }
 
 export async function readYaml(fileName: string): Promise<Record<string, any>> {
-  const filePath = path.join(process.cwd(), 'public', fileName);
+  const filePath = path.join(fileName);
   const fileData = readFileSync(filePath, 'utf-8');
   return YAML.parse(fileData) as Record<string, any>;
 }
