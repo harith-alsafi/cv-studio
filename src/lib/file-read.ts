@@ -1,13 +1,14 @@
-"use server";
-import mammoth from "mammoth";
-import * as pdfjsLib from "pdfjs-dist";
-import { promises as fs } from "fs";
-import YAML from "yaml";
-import { readFileSync } from "fs";
+"use server"
+import mammoth from 'mammoth';
+import * as pdfjsLib from 'pdfjs-dist';
+import { promises as fs } from 'fs';
+import YAML from 'yaml';
+import { readFileSync } from 'fs';
+import path from 'path';
 
 async function readDoc(filePath: string): Promise<string> {
-  const fullText = (await mammoth.extractRawText({ path: filePath })).value;
-  return fullText;
+    const fullText = (await mammoth.extractRawText({ path: filePath })).value;
+    return fullText;
 }
 
 async function readPdf(filePath: string): Promise<string> {
@@ -22,15 +23,15 @@ async function readPdf(filePath: string): Promise<string> {
 
     for (let i = 0; i < numPages; i++) {
       pageTextPromises.push(
-        pdf.getPage(i + 1).then((page) => page.getTextContent())
+        pdf.getPage(i + 1).then((page) => page.getTextContent()),
       );
     }
 
     const pagesText = await Promise.all(pageTextPromises);
-    let fullText = "";
+    let fullText = '';
 
     pagesText.forEach((page) => {
-      fullText += page.items.map((item: { str: any }) => item.str).join("\n");
+      fullText += page.items.map((item: { str: any; }) => item.str).join('\n');
     });
 
     return fullText;
@@ -41,32 +42,26 @@ async function readPdf(filePath: string): Promise<string> {
 }
 
 async function readText(filePath: string): Promise<string> {
-  const fullText = await fs.readFile(filePath, "utf-8");
-  return fullText;
+    const fullText = await fs.readFile(filePath, 'utf-8');
+    return fullText;
 }
 
 export async function readFile(filePath: string): Promise<string> {
-  if (filePath.endsWith(".pdf")) {
-    return await readPdf(filePath);
-  } else if (filePath.endsWith(".docx") || filePath.endsWith(".doc")) {
-    return await readDoc(filePath);
-  } else if (filePath.endsWith(".txt")) {
-    return await readText(filePath);
-  } else {
-    throw new Error("File type not supported");
-  }
+    if (filePath.endsWith('.pdf')) {
+      return await readPdf(filePath);
+    } else if (filePath.endsWith('.docx') || filePath.endsWith('.doc')) {
+      return await readDoc(filePath);
+    } 
+    else if (filePath.endsWith('.txt')) {
+      return await readText(filePath);
+    }
+    else {
+      throw new Error('File type not supported');
+    }
 }
 
-export async function readYaml(filePath: string): Promise<Record<string, any>> {
-  // Fetch the YAML file from the public folder
-  const res = await fetch(filePath);
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch file from ${filePath}: ${res.statusText}`);
-  }
-
-  const fileData = await res.text(); // Read the response as text
-
-  // const fileData = readFileSync(filePath, 'utf-8');
+export async function readYaml(fileName: string): Promise<Record<string, any>> {
+  const filePath = path.join(process.cwd(), 'templates', fileName);
+  const fileData = readFileSync(filePath, 'utf-8');
   return YAML.parse(fileData) as Record<string, any>;
 }
