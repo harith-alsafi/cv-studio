@@ -133,7 +133,7 @@ function CVEditorContent() {
         const dataLlm: OpenAIResponse = await responseLlm.json();
         const resumeDataLlm = JSON.parse(dataLlm.content) as Resume;
 
-        const template = await readYaml('public/template1.yaml');
+        const template = await readYaml('template1.yaml');
         const selectedTemplate = parseYamlTemplate(template);
 
         // Send data to the API for PDF generation

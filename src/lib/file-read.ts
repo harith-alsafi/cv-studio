@@ -4,6 +4,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { promises as fs } from 'fs';
 import YAML from 'yaml';
 import { readFileSync } from 'fs';
+import path from 'path';
 
 async function readDoc(filePath: string): Promise<string> {
     const fullText = (await mammoth.extractRawText({ path: filePath })).value;
@@ -59,7 +60,8 @@ export async function readFile(filePath: string): Promise<string> {
     }
 }
 
-export async function readYaml(filePath: string): Promise<Record<string, any>> {
+export async function readYaml(fileName: string): Promise<Record<string, any>> {
+  const filePath = path.join(process.cwd(), 'public', fileName);
   const fileData = readFileSync(filePath, 'utf-8');
   return YAML.parse(fileData) as Record<string, any>;
 }
