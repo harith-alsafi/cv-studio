@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resume } from '@/types/resume';
 import { LatexTemplate, LatexTemplateData } from '@/types/latex-template';
+import { generateLatexPdf } from '@/lib/latex-generation';
 
 export async function POST(req: Request) {
     try {
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                compiler: 'lualatex',
+                compiler: 'pdflatex',
                 resources: [
                     {
                         main: true,
@@ -35,11 +36,14 @@ export async function POST(req: Request) {
         });
 
         if (!response.ok) {
+            console.error('Failed to generate PDF:', response);
             throw new Error('Failed to generate PDF');
         }
 
         // Get the PDF buffer from the response
         const pdfBuffer = await response.arrayBuffer();
+
+        //  const pdfBuffer = await generateLatexPdf(latexDocument);
         
         // Return PDF as response
         return new NextResponse(pdfBuffer, {
