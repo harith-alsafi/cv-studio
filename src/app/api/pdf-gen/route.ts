@@ -19,14 +19,15 @@ export async function POST(req: Request) {
         
         console.log('latexDocument', latexDocument);
         // Call LaTeX.ytotech.com API to generate PDF
-        const response = await fetch('https://latex.ytotech.com/builds/sync', {
+        const response = await fetch('https://latex-to-pdf-production.up.railway.app/compile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                compiler: 'pdflatex',
-                resources: [
+                userId: "user123",
+                templateId: "template456",
+                files: [
                     {
                         main: true,
                         content: latexDocument
