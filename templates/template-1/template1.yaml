@@ -19,6 +19,7 @@ document:
     \usepackage{enumitem} % for customizing lists
     \usepackage{fontawesome5} % for using icons
     \usepackage{amsmath} % for math
+    \usepackage{etoolbox} 
     \usepackage[
     pdftitle={John Doe's CV},
     pdfauthor={John Doe},
@@ -42,7 +43,6 @@ document:
     \pdfgentounicode=1
     \usepackage[T1]{fontenc}
     \usepackage[utf8]{inputenc}
-    \usepackage{lmodern}
     \fi
 
     \usepackage[default, type1]{sourcesanspro} 
