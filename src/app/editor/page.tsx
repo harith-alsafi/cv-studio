@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import FileUpload from '@/components/file-upload'
 import PDFViewer from '@/components/pdf-viewer'
 import { TemplateType } from '../../types/templates'
@@ -17,6 +16,7 @@ import { readYaml } from '@/lib/file-read'
 import { parseYamlTemplate } from '@/lib/latex-template'
 import { useTheme } from 'next-themes'
 import { TopBar } from '@/components/ui/top-bar'
+import { TemplatePopup } from '@/components/template-popup'
 
 interface OpenAIResponse {
   role: string
@@ -32,12 +32,14 @@ function CVEditorContent() {
   const [templateType, setTemplateType] = useState<TemplateType | null>(
     TemplateType.CLASSIC
   )
+  const [templateName, setTemplateName] = useState('Classic')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [parsedData, setParsedData] = useState<Resume | null>(null)
-  const [language, setLanguage] = useState('English')
+  const [language, setLanguage] = useState('English') // Keep language state for API calls
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isTemplatePopupOpen, setIsTemplatePopupOpen] = useState(false)
   const { resolvedTheme } = useTheme()
 
   // Form state for additional info
@@ -55,6 +57,12 @@ function CVEditorContent() {
     const template = searchParams.get('template') as TemplateType
     if (template) {
       setTemplateType(template)
+      // Set template name based on type
+      if (template === TemplateType.MODERN) {
+        setTemplateName('Modern')
+      } else if (template === TemplateType.CLASSIC) {
+        setTemplateName('Classic')
+      }
     }
 
     // Avoid hydration mismatch
@@ -204,30 +212,30 @@ function CVEditorContent() {
   return (
     <main className="min-h-screen w-full bg-background dark:bg-[#111827] flex flex-col overflow-hidden">
       <TopBar />
+      
+      <TemplatePopup 
+        isOpen={isTemplatePopupOpen}
+        onClose={() => setIsTemplatePopupOpen(false)}
+        onSelectTemplate={(template) => {
+          setTemplateType(template.type as TemplateType)
+          setTemplateName(template.name)
+        }}
+      />
 
-      <div className="py-6 flex-1 grid md:grid-cols-2 gap-6 px-4 md:px-6">
+      <div className="py-6 flex-1 px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1440px] mx-auto">
         <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm dark:bg-[#1a1f2e] dark:border-[#2a3042]">
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold mb-2">Resume Details</h2>
-              <div className="flex justify-between items-center">
-                <span>CV Language:</span>
-                <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger className="w-[180px] dark:bg-[#2a3042] dark:border-[#3a4055]">
-                    <div className="flex items-center gap-2">
-                      <div className="h-5 w-5 rounded bg-muted dark:bg-[#3a4055] flex items-center justify-center text-xs">
-                        {language === 'English' ? 'us' : language === 'Spanish' ? 'es' : language === 'French' ? 'fr' : 'de'}
-                      </div>
-                      <SelectValue placeholder="Select language" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="dark:bg-[#2a3042] dark:border-[#3a4055]">
-                    <SelectItem value="English">English</SelectItem>
-                    <SelectItem value="Spanish">Spanish</SelectItem>
-                    <SelectItem value="French">French</SelectItem>
-                    <SelectItem value="German">German</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Template</h2>
+                <Button 
+                  variant="outline" 
+                  className="w-[180px] dark:bg-[#2a3042] dark:border-[#3a4055] flex justify-between items-center"
+                  onClick={() => setIsTemplatePopupOpen(true)}
+                >
+                  <span>{templateName}</span>
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
               </div>
             </div>
 
@@ -341,10 +349,12 @@ function CVEditorContent() {
               )}
             </div>
 
+          </div>
+          <div className="sticky bottom-6 flex justify-center mt-6">
             <Button
               onClick={handleGenerate}
               disabled={!resumeFile || loading}
-              className="w-full bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
+              className="w-auto px-8 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
               size="lg"
             >
               {loading ? (
