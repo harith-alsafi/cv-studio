@@ -4,15 +4,19 @@ import React, { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import FileUpload from '@/components/file-upload'
 import PDFViewer from '@/components/pdf-viewer'
 import { TemplateType } from '../../types/templates'
 import { Resume, resumeSample } from '@/types/resume'
 import { extractTextFromFile } from '@/lib/file-read-new'
-import { generateResumePDF } from '@/lib/pdf-gen-basic'
-import { Download, Loader2 } from 'lucide-react'
+import { generateResumePDF } from '@/lib/pdf-gen-basic' // Importing but not using in either version
+import { ChevronDown, Download, Loader2, Upload } from 'lucide-react'
 import { readYaml } from '@/lib/file-read'
 import { parseYamlTemplate } from '@/lib/latex-template'
+import { useTheme } from 'next-themes'
+import { TopBar } from '@/components/ui/top-bar'
 
 interface OpenAIResponse {
   role: string
@@ -22,6 +26,7 @@ interface OpenAIResponse {
 
 function CVEditorContent() {
   const [jobDescription, setJobDescription] = useState('')
+  const [jobTitle, setJobTitle] = useState('Service Designer')
   const [resumeFile, setResumeFile] = useState<File | null>(null)
   const [generatedPDF, setGeneratedPDF] = useState<string | null>(null)
   const [templateType, setTemplateType] = useState<TemplateType | null>(
@@ -30,6 +35,19 @@ function CVEditorContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [parsedData, setParsedData] = useState<Resume | null>(null)
+  const [language, setLanguage] = useState('English')
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme } = useTheme()
+
+  // Form state for additional info
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [address, setAddress] = useState('')
+  const [website, setWebsite] = useState('')
+  const [fileName, setFileName] = useState('No file chosen')
 
   const searchParams = useSearchParams()
 
@@ -38,10 +56,14 @@ function CVEditorContent() {
     if (template) {
       setTemplateType(template)
     }
+
+    // Avoid hydration mismatch
+    setMounted(true)
   }, [searchParams])
 
   const handleFileUpload = (file: File) => {
     setResumeFile(file)
+    setFileName(file.name)
     setError(null)
     setGeneratedPDF(null)
   }
@@ -55,13 +77,13 @@ function CVEditorContent() {
       const mimeString = generatedPDF.split(',')[0].split(':')[1].split(';')[0]
       const ab = new ArrayBuffer(byteString.length)
       const ia = new Uint8Array(ab)
-      
+
       for (let i = 0; i < byteString.length; i++) {
         ia[i] = byteString.charCodeAt(i)
       }
-      
+
       const blob = new Blob([ab], { type: mimeString })
-      
+
       // Create a download link and trigger the download
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
@@ -75,6 +97,10 @@ function CVEditorContent() {
       console.error('Error downloading PDF:', error)
       setError('Failed to download PDF')
     }
+  }
+
+  const toggleAdditionalInfo = () => {
+    setShowAdditionalInfo(!showAdditionalInfo)
   }
 
   const handleGenerate = async () => {
@@ -100,6 +126,15 @@ function CVEditorContent() {
         body: JSON.stringify({
           text,
           jobDescription: jobDescription.trim(),
+          jobTitle,
+          additionalInfo: showAdditionalInfo ? {
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            website
+          } : null
         }),
       })
 
@@ -122,11 +157,13 @@ function CVEditorContent() {
           body: JSON.stringify({
             resume: parsedContent,
             jobDescription,
+            jobTitle,
+            language
           }),
         });
 
-        if(!responseLlm.ok) {
-        console.error('Failed to generate resume:', responseLlm)
+        if (!responseLlm.ok) {
+          console.error('Failed to generate resume:', responseLlm)
           throw new Error('Failed to generate resume')
         }
 
@@ -140,9 +177,9 @@ function CVEditorContent() {
         const response = await fetch('/api/pdf-gen', {
           method: 'POST',
           headers: {
-              'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ resume: resumeDataLlm, template: selectedTemplate }), // Ensure `selectedTemplate` is available
+          body: JSON.stringify({ resume: resumeDataLlm, template: selectedTemplate }),
         });
 
         console.log(response);
@@ -153,6 +190,7 @@ function CVEditorContent() {
           setGeneratedPDF(pdfDataUrl);
         } else {
           console.error('Failed to generate PDF:', await response.text());
+          throw new Error('Failed to generate PDF');
         }
       }
     } catch (error) {
@@ -164,26 +202,150 @@ function CVEditorContent() {
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-theme(spacing.20))]">
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-bold mb-4">CV Studio</h1>
-          <p className="mb-4">Template: {templateType || 'None selected'}</p>
-          <FileUpload onFileUpload={handleFileUpload} />
-          {error && (
-            <div className="mt-4 text-red-600">Error: {error}</div>
-          )}
-          <Textarea
-            className="mt-4 flex-grow"
-            placeholder="Paste the job description here (optional)"
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-          />
-          <div className="mt-4 flex gap-4">
+    <main className="min-h-screen w-full bg-background dark:bg-[#111827] flex flex-col overflow-hidden">
+      <TopBar />
+
+      <div className="py-6 flex-1 grid md:grid-cols-2 gap-6 px-4 md:px-6">
+        <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Resume Details</h2>
+              <div className="flex justify-between items-center">
+                <span>CV Language:</span>
+                <Select value={language} onValueChange={setLanguage}>
+                  <SelectTrigger className="w-[180px] dark:bg-[#2a3042] dark:border-[#3a4055]">
+                    <div className="flex items-center gap-2">
+                      <div className="h-5 w-5 rounded bg-muted dark:bg-[#3a4055] flex items-center justify-center text-xs">
+                        {language === 'English' ? 'us' : language === 'Spanish' ? 'es' : language === 'French' ? 'fr' : 'de'}
+                      </div>
+                      <SelectValue placeholder="Select language" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="dark:bg-[#2a3042] dark:border-[#3a4055]">
+                    <SelectItem value="English">English</SelectItem>
+                    <SelectItem value="Spanish">Spanish</SelectItem>
+                    <SelectItem value="French">French</SelectItem>
+                    <SelectItem value="German">German</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Upload Resume</h2>
+              <div className="flex items-center gap-2">
+                <FileUpload onFileUpload={handleFileUpload} />
+                <span className="text-sm text-muted-foreground">{fileName}</span>
+              </div>
+              {error && (
+                <div className="mt-2 text-red-600 text-sm">Error: {error}</div>
+              )}
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Job Title</h2>
+              <Input
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+                className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+              />
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Job Description</h2>
+              <Textarea
+                placeholder="Paste the job description here"
+                className="min-h-[120px] w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <Button
+                variant="ghost"
+                onClick={toggleAdditionalInfo}
+                className="flex items-center gap-2 text-[hsl(var(--cv-accent))] p-0 h-auto"
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${showAdditionalInfo ? "rotate-180" : ""}`}
+                />
+                Edit additional info
+              </Button>
+
+              {showAdditionalInfo && (
+                <div className="mt-4 space-y-4 animate-in slide-in-from-top-5 duration-300">
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2">First Name</h2>
+                    <Input
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Enter first name"
+                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                    />
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2">Last Name</h2>
+                    <Input
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Enter last name"
+                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                    />
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2">Email Address</h2>
+                    <Input
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter email address"
+                      type="email"
+                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                    />
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2">Phone</h2>
+                    <Input
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Enter your phone number"
+                      type="tel"
+                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                    />
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2">Address</h2>
+                    <Input
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="Enter your address"
+                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                    />
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2">Website</h2>
+                    <Input
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      placeholder="Enter your website or portfolio"
+                      type="url"
+                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <Button
               onClick={handleGenerate}
               disabled={!resumeFile || loading}
-              className="flex-1"
+              className="w-full bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
+              size="lg"
             >
               {loading ? (
                 <>
@@ -191,41 +353,45 @@ function CVEditorContent() {
                   Processing...
                 </>
               ) : (
-                'Generate'
+                'Generate Resume'
               )}
             </Button>
-            {generatedPDF && (
-              <Button
-                onClick={handleDownload}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Download PDF
-              </Button>
-            )}
           </div>
         </div>
-        <div className="h-full relative">
-          {loading ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-              <div className="flex flex-col items-center gap-2">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                <p className="text-sm text-gray-600">
-                  Generating your CV...
-                </p>
+
+        <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm flex flex-col dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+          <div className="flex-1 overflow-hidden relative"> {/* Added 'relative' for proper loading overlay */}
+            {loading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
+                <div className="flex flex-col items-center gap-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">
+                    Generating your resume...
+                  </p>
+                </div>
               </div>
-            </div>
-          ) : generatedPDF ? (
-            <PDFViewer pdfUrl={generatedPDF} />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-500">
-              No PDF generated yet
+            ) : generatedPDF ? (
+              <PDFViewer pdfUrl={generatedPDF} />
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                No PDF generated yet
+              </div>
+            )}
+          </div>
+          {generatedPDF && (
+            <div className="mt-4 flex justify-end">
+              <Button
+                onClick={handleDownload}
+                className="flex items-center gap-2 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
+              >
+                <Download className="h-4 w-4" />
+                Download CV
+              </Button>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

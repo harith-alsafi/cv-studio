@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 @layer base {
@@ -33,6 +38,10 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    /* CV Studio specific colors */
+    --cv-button: 221.2 83.2% 53.3%;
+    --cv-button-hover: 221.2 83.2% 47.3%;
+    --cv-accent: 25 95% 53%;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -75,14 +84,59 @@ body {
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    /* CV Studio specific dark mode colors */
+    --cv-dark-bg: 222 24% 15%;
+    --cv-dark-card: 222 24% 15%;
+    --cv-dark-input: 220 22% 20%;
+    --cv-dark-border: 220 20% 24%;
+    --cv-button: 221.2 83.2% 53.3%;
+    --cv-button-hover: 221.2 83.2% 47.3%;
+    --cv-accent: 25 95% 53%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-  body {
+  html, body {
     @apply bg-background text-foreground;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
   }
+}
+
+/* Ensure button text is white in both themes */
+.text-white {
+  color: white !important;
+}
+
+/* Animation utilities */
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation-duration: 300ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.slide-in-from-top-5 {
+  animation-name: slide-in-from-top;
+}
+
+.duration-300 {
+  animation-duration: 300ms;
 }

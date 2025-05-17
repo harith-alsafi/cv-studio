@@ -3,6 +3,7 @@ import { Providers } from './providers'
 import React from "react";
 import Layout from '@/components/layout'
 import localFont from "next/font/local";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 // const inter = Inter({ subsets: ['latin'] })
@@ -29,10 +30,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased p-8`}
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
         {/*<Layout><Providers>{children}</Providers></Layout>*/}
         <Providers>{children}</Providers>
+        <Toaster />
         </body>
         </html>
     )
