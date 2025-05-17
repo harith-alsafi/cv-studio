@@ -23,7 +23,7 @@ function TemplatesContent() {
         setMounted(true)
     }, [])
 
-    const handleTemplateSelect = (type) => {
+    const handleTemplateSelect = (type:string) => {
         if (mounted) {
             router.push(`/editor?template=${type}`)
         }
