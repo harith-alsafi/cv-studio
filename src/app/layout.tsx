@@ -1,42 +1,52 @@
-import { Providers } from './providers'
+import { Providers } from "./providers";
 // import { Inter } from 'next/font/google'
 import React from "react";
-import Layout from '@/components/layout'
+import Layout from "@/components/layout";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 // const inter = Inter({ subsets: ['latin'] })
 const geistSans = localFont({
-    src: "./fonts/GeistVF.woff",
-    variable: "--font-geist-sans",
-    weight: "100 900",
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
 });
 const geistMono = localFont({
-    src: "./fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
 });
 
 export const metadata = {
-    title: 'CV Studio',
-    description: 'Create professional resumes with ease',
-}
+  title: "CV Studio",
+  description: "Create professional resumes with ease",
+};
 
 export default function RootLayout({
-                                       children,
-                                   }: {
-    children: React.ReactNode
+  children,
+}: {
+  children: React.ReactNode;
 }) {
-    return (
-        <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+  return (
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "hsl(163.4, 70%, 50.4%)", // change this value (you can get it from you're css variables, make sure to include 'hsl' and commas)
+        },
+      }}
+    >
+      <html lang="en" suppressHydrationWarning>
+        <head />
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-        {/*<Layout><Providers>{children}</Providers></Layout>*/}
-        <Providers>{children}</Providers>
-        <Toaster />
+          {/*<Layout><Providers>{children}</Providers></Layout>*/}
+          <Providers>{children}</Providers>
+          <Toaster />
         </body>
-        </html>
-    )
+      </html>
+    </ClerkProvider>
+  );
 }
-
