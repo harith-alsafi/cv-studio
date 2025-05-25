@@ -164,7 +164,7 @@ function ResumeGeneratorSkeleton() {
 }
 
 function CVEditorContent() {
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
   const [jobDescription, setJobDescription] = useState("");
   const [jobTitle, setJobTitle] = useState("Service Designer");
@@ -198,6 +198,11 @@ function CVEditorContent() {
     if (isLoaded && !isSignedIn) {
       router.push("/sign-in");
     }
+    if (user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+      setEmail(user.emailAddresses[0]?.emailAddress || "");    
+    }
     const template = searchParams.get("template") as TemplateType;
     if (template) {
       setTemplateType(template);
@@ -211,7 +216,7 @@ function CVEditorContent() {
 
     // Avoid hydration mismatch
     setMounted(true);
-  }, [searchParams, isLoaded, isSignedIn, router]);
+  }, [searchParams, isLoaded, isSignedIn, router, user]);
 
   const handleFileUpload = (file: File) => {
     setResumeFile(file);

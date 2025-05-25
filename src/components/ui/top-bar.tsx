@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -8,13 +9,40 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { User, Settings, CreditCard, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+function UserAvatar(){
+  const { user } = useUser();
+
+  if (!user) {
+    return (
+      <div className="h-full w-full rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-yellow-500" />
+    );
+  }
+
+  return (
+    <img
+      src={user.imageUrl}
+      alt="User Avatar"
+      className="h-full w-full rounded-full object-cover"
+    />
+  );
+};
+
 export function TopBar() {
+  const { user } = useUser();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
 
   // After mounting, we have access to the theme
   useEffect(() => {
+        if (user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+      setEmail(user.emailAddresses[0]?.emailAddress || "");    
+    }
     setMounted(true);
   }, []);
 
@@ -52,7 +80,7 @@ export function TopBar() {
               className="h-10 w-10 rounded-full ml-2 p-0 border-border bg-background hover:bg-accent dark:bg-[#1a1f2e] dark:border-[#2a3042] dark:hover:bg-[#2a3042]"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <div className="h-full w-full rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-yellow-500" />
+              <UserAvatar />
             </Button>
 
             {isDropdownOpen && (
@@ -64,8 +92,8 @@ export function TopBar() {
                   aria-labelledby="options-menu"
                 >
                   <div className="px-4 py-2 text-sm border-b border-border dark:border-[#2a3042]">
-                    <p className="font-medium text-foreground">John Doe</p>
-                    <p className="text-muted-foreground">john@example.com</p>
+                    <p className="font-medium text-foreground">{`${firstName} ${lastName}`}</p>
+                    <p className="text-muted-foreground">{email}</p>
                   </div>
 
                   <button
