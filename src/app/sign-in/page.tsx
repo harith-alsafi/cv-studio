@@ -7,6 +7,7 @@ export default function Page() {
       <SignIn
         routing="hash"
         signUpUrl="/sign-up"
+        fallbackRedirectUrl={"/"}
         appearance={{
           elements: {
             dividerRow: "hidden", // hides the row with the divider

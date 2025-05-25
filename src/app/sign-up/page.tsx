@@ -6,6 +6,7 @@ export default function Page() {
     <div className="flex justify-center items-center min-h-screen">
       <SignUp routing="hash" 
         signInUrl="/sign-in"
+        fallbackRedirectUrl={"/"}
       />
     </div>
   );
