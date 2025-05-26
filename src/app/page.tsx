@@ -18,6 +18,7 @@ import { readYaml } from "@/lib/file-read";
 import { parseYamlTemplate } from "@/lib/latex-template";
 import { useTheme } from "next-themes";
 import { TopBar } from "@/components/ui/top-bar";
+import { ToastWithAction } from "./toast-with-action";
 import { TemplatePopup } from "@/components/template-popup";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -574,6 +575,9 @@ export default function CVEditor() {
   return (
     <Suspense fallback={<ResumeGeneratorSkeleton />}>
       <CVEditorContent />
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <ToastWithAction />
+      </div>
     </Suspense>
   );
 }

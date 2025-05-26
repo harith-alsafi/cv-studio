@@ -104,16 +104,27 @@ export function TopBar() {
                     User Settings
                   </button>
 
-                  <button
-                    className="flex w-full items-center px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-[#2a3042]"
-                    role="menuitem"
-                  >
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    <span>Credits: </span>
-                    <span className="ml-1 font-medium text-[hsl(var(--cv-accent))]">
-                      100
-                    </span>
-                  </button>
+
+
+                  <div className="px-4 py-2 text-sm border-t border-border dark:border-[#2a3042]">
+                    <div className="flex justify-between items-center">
+                      <p className="text-muted-foreground">Generations Left</p>
+                      <p className="font-medium text-foreground">10/10</p>
+                    </div>
+                    <div className="mt-2 w-full bg-gray-200 dark:bg-[#2a3042] rounded-full h-2">
+                      <div className="bg-emerald-400 h-2 rounded-full w-full"></div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Usage resets in 1 day</p>
+                  </div>
+
+                  <div className="px-4 py-2 border-t border-border dark:border-[#2a3042]">
+                    <button
+                      className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md font-medium hover:opacity-90 transition-opacity"
+                      role="menuitem"
+                    >
+                      Upgrade to Premium
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
