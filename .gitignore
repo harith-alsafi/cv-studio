@@ -48,3 +48,5 @@ next-env.d.ts
 /infra/harithsami01_accessKeys.csv
 /infra/harithsami01_credentials.csv
 /infra/node_modules/*
+# clerk configuration (can include secrets)
+/.clerk/
