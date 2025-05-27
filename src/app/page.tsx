@@ -428,8 +428,8 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
       />
 
       <div className="py-6 flex-1 px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1440px] mx-auto">
-        <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm dark:bg-[#1a1f2e] dark:border-[#2a3042]">
-          <div className="space-y-6">
+        <div className="bg-card text-card-foreground rounded-lg border shadow-sm dark:bg-[#1a1f2e] dark:border-[#2a3042] flex flex-col h-full overflow-hidden relative">
+          <div className="space-y-6 p-6 flex-grow overflow-y-auto">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Template</h2>
@@ -560,11 +560,11 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
               )}
             </div>
           </div>
-          <div className="sticky bottom-6 flex justify-center mt-6">
+          <div className="p-4 border-t bg-card dark:bg-[#1a1f2e] dark:border-[#2a3042]">
             <Button
               onClick={handleGenerate}
               disabled={!resumeFile || loading}
-              className="w-auto px-8 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
+              className="w-full px-8 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
               size="lg"
             >
               {loading ? (
