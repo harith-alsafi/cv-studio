@@ -27,7 +27,11 @@ function UserAvatar(){
   );
 };
 
-export function TopBar() {
+interface TopBarProps {
+  onUpgradeClick?: () => void;
+}
+
+export function TopBar({ onUpgradeClick }: TopBarProps) {
   const { user } = useUser();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -121,6 +125,7 @@ export function TopBar() {
                     <button
                       className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md font-medium hover:opacity-90 transition-opacity"
                       role="menuitem"
+                    onClick={onUpgradeClick}
                     >
                       Upgrade to Premium
                     </button>

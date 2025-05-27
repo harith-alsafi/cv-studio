@@ -19,8 +19,11 @@ import { parseYamlTemplate } from "@/lib/latex-template";
 import { useTheme } from "next-themes";
 import { TopBar } from "@/components/ui/top-bar";
 import { ToastWithAction } from "./toast-with-action";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 import { TemplatePopup } from "@/components/template-popup";
 import { Skeleton } from "@/components/ui/skeleton";
+import Pricing from "@/components/pricing"; // Import the Pricing component
 
 interface OpenAIResponse {
   role: string;
@@ -164,9 +167,16 @@ function ResumeGeneratorSkeleton() {
   )
 }
 
-function CVEditorContent() {
+interface CVEditorContentProps {
+  showPricingDialog: boolean;
+  openPricingDialog: () => void;
+  closePricingDialog: () => void;
+}
+
+function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDialog }: CVEditorContentProps) {
   const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
+  const { toast } = useToast();
   const [jobDescription, setJobDescription] = useState("");
   const [jobTitle, setJobTitle] = useState("Service Designer");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -184,6 +194,7 @@ function CVEditorContent() {
   const [isTemplatePopupOpen, setIsTemplatePopupOpen] = useState(false);
   const { resolvedTheme } = useTheme();
 
+
   // Form state for additional info
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -196,6 +207,14 @@ function CVEditorContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    // Initialize with a default value or based on user data
+    setFirstName(user?.firstName || "");
+    setLastName(user?.lastName || "");
+    setEmail(user?.emailAddresses[0]?.emailAddress || "");
+    setPhone(user?.phoneNumbers[0]?.phoneNumber || "");
+    // setAddress - Clerk user object doesn't typically store full address, handle as needed
+    // setWebsite - Clerk user object doesn't typically store website, handle as needed
+
     if (isLoaded && !isSignedIn) {
       router.push("/sign-in");
     }
@@ -299,8 +318,9 @@ function CVEditorContent() {
       });
 
       if (!response.ok) {
-        console.error("Failed to parse resume:", response);
-        throw new Error("Failed to parse resume");
+        const errorText = await response.text();
+        console.error("Failed to parse resume:", errorText);
+        throw new Error(`Failed to parse resume: ${response.statusText}`);
       }
 
       const data: OpenAIResponse = await response.json();
@@ -309,6 +329,7 @@ function CVEditorContent() {
         const parsedContent = JSON.parse(data.content) as Resume;
         setParsedData(parsedContent);
 
+        // Generate tailored resume content using LLM
         const responseLlm = await fetch("/api/resume-gen", {
           method: "POST",
           headers: {
@@ -323,18 +344,23 @@ function CVEditorContent() {
         });
 
         if (!responseLlm.ok) {
-          console.error("Failed to generate resume:", responseLlm);
-          throw new Error("Failed to generate resume");
+          const errorText = await responseLlm.text();
+          console.error("Failed to generate resume content from LLM:", errorText);
+          throw new Error(`Failed to generate resume content from LLM: ${responseLlm.statusText}`);
         }
 
         const dataLlm: OpenAIResponse = await responseLlm.json();
+        if (!dataLlm.content) {
+          console.error("LLM response content is empty or missing.");
+          throw new Error("Failed to get valid content from LLM.");
+        }
         const resumeDataLlm = JSON.parse(dataLlm.content) as Resume;
 
-        const template = await readYaml("template-1/template1.yaml");
-        const selectedTemplate = parseYamlTemplate(template);
+        // Read template and generate PDF
+        const templateYaml = await readYaml("template-1/template1.yaml"); // Ensure this path is correct
+        const selectedTemplate = parseYamlTemplate(templateYaml);
 
-        // Send data to the API for PDF generation
-        const response = await fetch("/api/pdf-gen", {
+        const pdfGenResponse = await fetch("/api/pdf-gen", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -345,20 +371,40 @@ function CVEditorContent() {
           }),
         });
 
-        console.log(response);
-
-        if (response.ok) {
-          const blob = await response.blob();
-          const pdfDataUrl = URL.createObjectURL(blob);
-          setGeneratedPDF(pdfDataUrl);
-        } else {
-          console.error("Failed to generate PDF:", await response.text());
-          throw new Error("Failed to generate PDF");
+        if (!pdfGenResponse.ok) {
+          const errorText = await pdfGenResponse.text();
+          console.error("Failed to generate PDF:", errorText);
+          throw new Error(`Failed to generate PDF: ${pdfGenResponse.statusText}`);
         }
+
+        const blob = await pdfGenResponse.blob();
+        const pdfDataUrl = URL.createObjectURL(blob);
+        setGeneratedPDF(pdfDataUrl);
+      } else {
+        // Handle case where data.content from parser API is empty
+        console.error("Parsed resume content is empty.");
+        throw new Error("Failed to parse resume content.");
       }
     } catch (error) {
-      console.error("Error:", error);
-      setError(error instanceof Error ? error.message : "An error occurred");
+      console.error("Error in handleGenerate:", error);
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setError(errorMessage);
+
+      // Show toast with upgrade action if error indicates a usage limit
+      if (
+        errorMessage.toLowerCase().includes("limit") ||
+        errorMessage.toLowerCase().includes("free generation") ||
+        errorMessage.toLowerCase().includes("upgrade") ||
+        errorMessage.toLowerCase().includes("premium")
+      ) {
+        toast({
+          title: "Usage Limit Reached",
+          description: "Please upgrade to continue using premium features.",
+          variant: "destructive",
+          duration: Infinity,
+          action: <ToastAction altText="Upgrade" onClick={openPricingDialog} className="py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md font-medium hover:opacity-90 transition-opacity">Upgrade</ToastAction>,
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -370,7 +416,7 @@ function CVEditorContent() {
 
   return (
     <main className="min-h-screen w-full bg-background dark:bg-[#111827] flex flex-col overflow-hidden">
-      <TopBar />
+      <TopBar onUpgradeClick={openPricingDialog} />
 
       <TemplatePopup
         isOpen={isTemplatePopupOpen}
@@ -567,16 +613,32 @@ function CVEditorContent() {
           )}
         </div>
       </div>
+      {/* Pricing Dialog */}
+      {showPricingDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card p-6 rounded-lg shadow-xl max-w-3xl w-full mx-auto">
+            <Pricing onClose={closePricingDialog} />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
 
 export default function CVEditor() {
+  const [showPricingDialog, setShowPricingDialog] = useState(false);
+  const openPricingDialog = () => setShowPricingDialog(true);
+  const closePricingDialog = () => setShowPricingDialog(false);
+
   return (
     <Suspense fallback={<ResumeGeneratorSkeleton />}>
-      <CVEditorContent />
+      <CVEditorContent 
+        showPricingDialog={showPricingDialog}
+        openPricingDialog={openPricingDialog}
+        closePricingDialog={closePricingDialog}
+      />
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <ToastWithAction />
+        <ToastWithAction onOpenPricingDialog={openPricingDialog} />
       </div>
     </Suspense>
   );
