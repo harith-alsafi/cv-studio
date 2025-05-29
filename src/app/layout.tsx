@@ -1,4 +1,3 @@
-import { Providers } from "./providers";
 // import { Inter } from 'next/font/google'
 import React from "react";
 import Layout from "@/components/layout";
@@ -6,6 +5,7 @@ import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "next-themes";
 
 // const inter = Inter({ subsets: ['latin'] })
 const geistSans = localFont({
@@ -36,8 +36,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {/*<Layout><Providers>{children}</Providers></Layout>*/}
-          <Providers>{children}</Providers>
+          <ThemeProvider attribute="class">{children}</ThemeProvider>;
           <Toaster />
         </body>
       </html>
