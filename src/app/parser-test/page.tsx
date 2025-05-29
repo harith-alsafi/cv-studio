@@ -4,8 +4,8 @@
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Resume } from '@/types/resume';
-import { extractTextFromFile } from '@/lib/file-read-new';
-import { generateResumePDF } from '@/lib/pdf-gen-basic';
+import { extractTextFromFile } from '@/lib/file-read';
+import { generateResumePDF } from '@/lib/pdf-generation';
 import { Download } from 'lucide-react';
 
 interface OpenAIResponse {

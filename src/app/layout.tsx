@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
+import { UserProvider } from "@/context/user-context";
+import { TemplateProvider } from "@/context/template-context";
 
 // const inter = Inter({ subsets: ['latin'] })
 const geistSans = localFont({
@@ -36,7 +38,11 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <ThemeProvider attribute="class">{children}</ThemeProvider>;
+          <ThemeProvider attribute="class">
+            <TemplateProvider>
+              <UserProvider>{children}</UserProvider>
+            </TemplateProvider>
+          </ThemeProvider>
           <Toaster />
         </body>
       </html>

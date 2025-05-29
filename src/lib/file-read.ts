@@ -1,59 +1,60 @@
-"use server";
-import mammoth from "mammoth";
 import * as pdfjsLib from "pdfjs-dist";
+import mammoth from "mammoth";
 import { promises as fs } from "fs";
 import YAML from "yaml";
 import path from "path";
 
-async function readDoc(filePath: string): Promise<string> {
-  const fullText = (await mammoth.extractRawText({ path: filePath })).value;
-  return fullText;
+// Initialize PDF.js worker
+if (typeof window !== "undefined") {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.min.mjs",
+    import.meta.url
+  ).toString();
 }
 
-async function readPdf(filePath: string): Promise<string> {
-  const fileData = await fs.readFile(filePath);
-  const pdfData = new Uint8Array(fileData);
-
+async function extractPdfText(file: File): Promise<string> {
   try {
-    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-
-    const numPages = pdf.numPages;
-    const pageTextPromises: any[] = [];
-
-    for (let i = 0; i < numPages; i++) {
-      pageTextPromises.push(
-        pdf.getPage(i + 1).then((page) => page.getTextContent())
-      );
-    }
-
-    const pagesText = await Promise.all(pageTextPromises);
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
     let fullText = "";
 
-    pagesText.forEach((page) => {
-      fullText += page.items.map((item: { str: any }) => item.str).join("\n");
-    });
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map((item: any) => item.str).join(" ");
+      fullText += pageText + "\n";
+    }
 
     return fullText;
   } catch (error) {
-    // Handle errors here
-    throw error;
+    console.error("Error reading PDF:", error);
+    throw new Error("Failed to read PDF file");
   }
 }
 
-async function readText(filePath: string): Promise<string> {
-  const fullText = await fs.readFile(filePath, "utf-8");
-  return fullText;
+async function extractWordText(file: File): Promise<string> {
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  } catch (error) {
+    console.error("Error reading Word document:", error);
+    throw new Error("Failed to read Word document");
+  }
 }
 
-export async function readFile(filePath: string): Promise<string> {
-  if (filePath.endsWith(".pdf")) {
-    return await readPdf(filePath);
-  } else if (filePath.endsWith(".docx") || filePath.endsWith(".doc")) {
-    return await readDoc(filePath);
-  } else if (filePath.endsWith(".txt")) {
-    return await readText(filePath);
+export async function extractTextFromFile(file: File): Promise<string> {
+  if (file.type === "application/pdf") {
+    return await extractPdfText(file);
+  } else if (
+    file.type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    file.type === "application/msword"
+  ) {
+    return await extractWordText(file);
   } else {
-    throw new Error("File type not supported");
+    return await file.text();
   }
 }
 

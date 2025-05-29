@@ -1,6 +1,6 @@
 // types/latex-template.ts
 import { readYaml } from "@/lib/file-read";
-import { parseYamlTemplate } from "@/lib/latex-template";
+import { parseYamlTemplate } from "@/lib/latex-template-parse";
 import { LanguageLevel, Resume, Section } from "@/types/resume";
 
 export interface ExpectedArg<S> {
@@ -469,16 +469,19 @@ export interface TemplateEntry {
   filePath: string;
   name: string;
   data: LatexTemplateData;
+  description?: string;
 };
 
 export async function getLatexTemplates(): Promise<TemplateEntry[]> {
   const fileName = "template-1/template1.yaml";
   const yamlData = await readYaml(fileName);
+  const templateData = parseYamlTemplate(yamlData);
+  
   return [
     {
       filePath: fileName,
       name: "Template 1",
-      data: parseYamlTemplate(yamlData),
+      data: templateData
     },
   ];
 }

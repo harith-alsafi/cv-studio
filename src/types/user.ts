@@ -39,7 +39,6 @@ export interface User {
   clerkId: string;
   email: string;
   stripeId: string;
-  createdAt: Date;
 
   data: UserData;
 }

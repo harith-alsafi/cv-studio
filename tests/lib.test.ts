@@ -3,7 +3,7 @@ import { generateLatexPdf } from "@/lib/latex-generation";
 import { Resume, resumeSample } from "@/types/resume";
 import { describe, it, expect } from 'vitest';
 import path from 'path';
-import { parseYamlTemplate } from "@/lib/latex-template";
+import { parseYamlTemplate } from "@/lib/latex-template-parse";
 import { LatexTemplate } from "@/types/latex-template";
 
 describe('generateLatexDocument', () => {

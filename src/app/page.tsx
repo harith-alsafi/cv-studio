@@ -11,11 +11,11 @@ import FileUpload from "@/components/file-upload";
 import PDFViewer from "@/components/pdf-viewer";
 import { TemplateType } from "@/types/templates";
 import { Resume, resumeSample } from "@/types/resume";
-import { extractTextFromFile } from "@/lib/file-read-new";
-import { generateResumePDF } from "@/lib/pdf-gen-basic"; // Importing but not using in either version
+import { extractTextFromFile } from "@/lib/file-read";
+import { generateResumePDF } from "@/lib/pdf-generation"; // Importing but not using in either version
 import { ChevronDown, Download, Loader2, Upload } from "lucide-react";
 import { readYaml } from "@/lib/file-read";
-import { parseYamlTemplate } from "@/lib/latex-template";
+import { parseYamlTemplate } from "@/lib/latex-template-parse";
 import { useTheme } from "next-themes";
 import { TopBar } from "@/components/ui/top-bar";
 import { ToastWithAction } from "./toast-with-action";
@@ -24,6 +24,10 @@ import { useToast } from "@/hooks/use-toast";
 import { TemplatePopup } from "@/components/template-popup";
 import { Skeleton } from "@/components/ui/skeleton";
 import Pricing from "@/components/pricing"; // Import the Pricing component
+import { useUserData } from "@/context/user-context";
+import { loadUser, saveUser } from "@/lib/firestore-db";
+import { User } from "@/types/user";
+import { createStripeCustomer } from "@/lib/stripe-payment";
 
 interface OpenAIResponse {
   role: string;
@@ -130,7 +134,7 @@ function ResumeGeneratorSkeleton() {
                 <Skeleton className="h-6 w-32" />
                 <Skeleton className="h-8 w-20" />
               </div>
-              
+
               {/* PDF Content Area */}
               <div className="flex-1 border rounded-lg p-4 space-y-4">
                 {/* Header section */}
@@ -139,7 +143,7 @@ function ResumeGeneratorSkeleton() {
                   <Skeleton className="h-4 w-64 mx-auto" />
                   <Skeleton className="h-4 w-56 mx-auto" />
                 </div>
-                
+
                 {/* Sections */}
                 <div className="space-y-6 mt-8">
                   {[1, 2, 3, 4].map((section) => (
@@ -156,7 +160,7 @@ function ResumeGeneratorSkeleton() {
               </div>
             </div>
           </div>
-          
+
           {/* Download Button */}
           <div className="mt-4 flex justify-end">
             <Skeleton className="h-10 w-32" />
@@ -164,7 +168,7 @@ function ResumeGeneratorSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 interface CVEditorContentProps {
@@ -173,8 +177,13 @@ interface CVEditorContentProps {
   closePricingDialog: () => void;
 }
 
-function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDialog }: CVEditorContentProps) {
-  const { isLoaded, isSignedIn, user } = useUser();
+function CVEditorContent({
+  showPricingDialog,
+  openPricingDialog,
+  closePricingDialog,
+}: CVEditorContentProps) {
+  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
+  const { user, setUser } = useUserData();
   const router = useRouter();
   const { toast } = useToast();
   const [jobDescription, setJobDescription] = useState("");
@@ -194,7 +203,6 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
   const [isTemplatePopupOpen, setIsTemplatePopupOpen] = useState(false);
   const { resolvedTheme } = useTheme();
 
-
   // Form state for additional info
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -208,20 +216,42 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
 
   useEffect(() => {
     // Initialize with a default value or based on user data
-    setFirstName(user?.firstName || "");
-    setLastName(user?.lastName || "");
-    setEmail(user?.emailAddresses[0]?.emailAddress || "");
-    setPhone(user?.phoneNumbers[0]?.phoneNumber || "");
+    setFirstName(clerkUser?.firstName || "");
+    setLastName(clerkUser?.lastName || "");
+    setEmail(clerkUser?.emailAddresses[0]?.emailAddress || "");
+    setPhone(clerkUser?.phoneNumbers[0]?.phoneNumber || "");
     // setAddress - Clerk user object doesn't typically store full address, handle as needed
     // setWebsite - Clerk user object doesn't typically store website, handle as needed
 
     if (isLoaded && !isSignedIn) {
       router.push("/sign-in");
     }
-    if (user) {
-      setFirstName(user.firstName || "");
-      setLastName(user.lastName || "");
-      setEmail(user.emailAddresses[0]?.emailAddress || "");    
+    if (clerkUser) {
+      const emailAddress = clerkUser.emailAddresses[0]?.emailAddress || "";
+      setFirstName(clerkUser.firstName || "");
+      setLastName(clerkUser.lastName || "");
+      setEmail(emailAddress);
+      (async () => {
+        // Load user data from Firestore if Clerk user is signed in
+        const clerkId = clerkUser.id;
+        let existingUser = await loadUser(clerkId);
+
+        if (!existingUser) {
+          const stripeId = await createStripeCustomer(emailAddress, clerkId);
+          const newUser: User = {
+            stripeId,
+            clerkId,
+            email: emailAddress,
+            data: {
+              profiles: [],
+            },
+          };
+          await saveUser(newUser);
+          setUser(newUser);
+        } else {
+          setUser(existingUser);
+        }
+      })();
     }
     const template = searchParams.get("template") as TemplateType;
     if (template) {
@@ -236,7 +266,7 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
 
     // Avoid hydration mismatch
     setMounted(true);
-  }, [searchParams, isLoaded, isSignedIn, router, user]);
+  }, [searchParams, isLoaded, isSignedIn, router, clerkUser, user]);
 
   const handleFileUpload = (file: File) => {
     setResumeFile(file);
@@ -345,8 +375,13 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
 
         if (!responseLlm.ok) {
           const errorText = await responseLlm.text();
-          console.error("Failed to generate resume content from LLM:", errorText);
-          throw new Error(`Failed to generate resume content from LLM: ${responseLlm.statusText}`);
+          console.error(
+            "Failed to generate resume content from LLM:",
+            errorText
+          );
+          throw new Error(
+            `Failed to generate resume content from LLM: ${responseLlm.statusText}`
+          );
         }
 
         const dataLlm: OpenAIResponse = await responseLlm.json();
@@ -374,7 +409,9 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
         if (!pdfGenResponse.ok) {
           const errorText = await pdfGenResponse.text();
           console.error("Failed to generate PDF:", errorText);
-          throw new Error(`Failed to generate PDF: ${pdfGenResponse.statusText}`);
+          throw new Error(
+            `Failed to generate PDF: ${pdfGenResponse.statusText}`
+          );
         }
 
         const blob = await pdfGenResponse.blob();
@@ -387,7 +424,8 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
       }
     } catch (error) {
       console.error("Error in handleGenerate:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
       setError(errorMessage);
 
       // Show toast with upgrade action if error indicates a usage limit
@@ -402,7 +440,15 @@ function CVEditorContent({ showPricingDialog, openPricingDialog, closePricingDia
           description: "Please upgrade to continue using premium features.",
           variant: "destructive",
           duration: Infinity,
-          action: <ToastAction altText="Upgrade" onClick={openPricingDialog} className="py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md font-medium hover:opacity-90 transition-opacity">Upgrade</ToastAction>,
+          action: (
+            <ToastAction
+              altText="Upgrade"
+              onClick={openPricingDialog}
+              className="py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md font-medium hover:opacity-90 transition-opacity"
+            >
+              Upgrade
+            </ToastAction>
+          ),
         });
       }
     } finally {
@@ -632,7 +678,7 @@ export default function CVEditor() {
 
   return (
     <Suspense fallback={<ResumeGeneratorSkeleton />}>
-      <CVEditorContent 
+      <CVEditorContent
         showPricingDialog={showPricingDialog}
         openPricingDialog={openPricingDialog}
         closePricingDialog={closePricingDialog}
