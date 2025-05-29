@@ -1,3 +1,4 @@
+"use client";
 import { getLatexTemplates, TemplateEntry } from "@/types/latex-template";
 import React, { createContext, useContext, useEffect, useState } from "react";
 

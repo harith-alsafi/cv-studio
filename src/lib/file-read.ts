@@ -1,3 +1,4 @@
+"use server";
 import * as pdfjsLib from "pdfjs-dist";
 import mammoth from "mammoth";
 import { promises as fs } from "fs";
