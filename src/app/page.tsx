@@ -384,10 +384,6 @@ function CVEditorContent({
         }
         const resumeDataLlm = JSON.parse(dataLlm.content) as Resume;
 
-        // Read template and generate PDF
-        const templateYaml = await readYaml("template-1/template1.yaml"); // Ensure this path is correct
-        const selectedTemplate = parseYamlTemplate(templateYaml);
-
         const pdfGenResponse = await fetch("/api/pdf-gen", {
           method: "POST",
           headers: {
@@ -395,7 +391,7 @@ function CVEditorContent({
           },
           body: JSON.stringify({
             resume: resumeDataLlm,
-            template: selectedTemplate,
+            template: templateType?.data,
           }),
         });
 
