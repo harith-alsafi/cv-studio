@@ -5,20 +5,19 @@ import { X } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TemplateType } from '../types/templates'
 import Image from 'next/image'
-
-const templates = [
-  { name: 'Modern', type: TemplateType.MODERN, image: '/images/modern.png' },
-  { name: 'Classic', type: TemplateType.CLASSIC, image: '/images/classic.png' },
-]
+import { useTemplateContext } from '@/context/template-context'
+import { TemplateEntry } from '@/types/latex-template'
 
 interface TemplatePopupProps {
   isOpen: boolean
   onClose: () => void
-  onSelectTemplate: (template: { name: string; type: string }) => void
+  onSelectTemplate: (template: TemplateEntry) => void
 }
 
 export function TemplatePopup({ isOpen, onClose, onSelectTemplate }: TemplatePopupProps) {
   const [mounted, setMounted] = useState(false)
+  const { templates } = useTemplateContext();
+  
   
   useEffect(() => {
     setMounted(true)
@@ -43,7 +42,7 @@ export function TemplatePopup({ isOpen, onClose, onSelectTemplate }: TemplatePop
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {templates.map((template) => (
               <Card
-                key={template.type}
+                key={template.key}
                 className="cursor-pointer hover:shadow-lg transition-shadow bg-card text-card-foreground border shadow-sm dark:bg-[#1a1f2e] dark:border-[#2a3042] overflow-hidden"
                 onClick={() => {
                   onSelectTemplate(template)

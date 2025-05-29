@@ -3,7 +3,7 @@ import { getLatexTemplates, TemplateEntry } from "@/types/latex-template";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface TemplateContextType {
-  templates: TemplateEntry[] | null;
+  templates: TemplateEntry[];
   loading: boolean;
   error: Error | null;
 }
@@ -11,7 +11,7 @@ interface TemplateContextType {
 const TemplateContext = createContext<TemplateContextType | undefined>(undefined);
 
 export const TemplateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [templates, setTemplates] = useState<TemplateEntry[] | null>(null);
+  const [templates, setTemplates] = useState<TemplateEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 

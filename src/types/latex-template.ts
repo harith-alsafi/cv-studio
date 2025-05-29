@@ -466,22 +466,33 @@ export function getLatexExpectedArgs(): Record<
 }
 
 export interface TemplateEntry {
+  key: string;
+  image: string;
   filePath: string;
   name: string;
   data: LatexTemplateData;
   description?: string;
-};
+}
 
 export async function getLatexTemplates(): Promise<TemplateEntry[]> {
   const fileName = "template-1/template1.yaml";
   const yamlData = await readYaml(fileName);
   const templateData = parseYamlTemplate(yamlData);
-  
+
   return [
     {
+      key: "modern",
+      image: "/images/modern.png",
       filePath: fileName,
-      name: "Template 1",
-      data: templateData
+      name: "Modern",
+      data: templateData,
+    },
+    {
+      key: "classic",
+      image: "/images/classic.png",
+      filePath: fileName,
+      name: "Classic",
+      data: templateData,
     },
   ];
 }

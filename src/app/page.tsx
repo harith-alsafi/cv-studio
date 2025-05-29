@@ -24,10 +24,12 @@ import { useToast } from "@/hooks/use-toast";
 import { TemplatePopup } from "@/components/template-popup";
 import { Skeleton } from "@/components/ui/skeleton";
 import Pricing from "@/components/pricing"; // Import the Pricing component
-import { useUserData } from "@/context/user-context";
+import { useUserContext } from "@/context/user-context";
 import { loadUser, saveUser } from "@/lib/firestore-db";
 import { User } from "@/types/user";
 import { createStripeCustomer } from "@/lib/stripe-payment";
+import { useTemplateContext } from "@/context/template-context";
+import { TemplateEntry } from "@/types/latex-template";
 
 interface OpenAIResponse {
   role: string;
@@ -183,15 +185,16 @@ function CVEditorContent({
   closePricingDialog,
 }: CVEditorContentProps) {
   const { isLoaded, isSignedIn, user: clerkUser } = useUser();
-  const { user, setUser } = useUserData();
+  const { user, setUser } = useUserContext();
+  const { templates } = useTemplateContext();
   const router = useRouter();
   const { toast } = useToast();
   const [jobDescription, setJobDescription] = useState("");
   const [jobTitle, setJobTitle] = useState("Service Designer");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [generatedPDF, setGeneratedPDF] = useState<string | null>(null);
-  const [templateType, setTemplateType] = useState<TemplateType | null>(
-    TemplateType.CLASSIC
+  const [templateType, setTemplateType] = useState<TemplateEntry | null>(
+    templates?.at(0) || null
   );
   const [templateName, setTemplateName] = useState("Classic");
   const [loading, setLoading] = useState(false);
@@ -252,16 +255,6 @@ function CVEditorContent({
           setUser(existingUser);
         }
       })();
-    }
-    const template = searchParams.get("template") as TemplateType;
-    if (template) {
-      setTemplateType(template);
-      // Set template name based on type
-      if (template === TemplateType.MODERN) {
-        setTemplateName("Modern");
-      } else if (template === TemplateType.CLASSIC) {
-        setTemplateName("Classic");
-      }
     }
 
     // Avoid hydration mismatch
@@ -468,7 +461,7 @@ function CVEditorContent({
         isOpen={isTemplatePopupOpen}
         onClose={() => setIsTemplatePopupOpen(false)}
         onSelectTemplate={(template) => {
-          setTemplateType(template.type as TemplateType);
+          setTemplateType(template);
           setTemplateName(template.name);
         }}
       />
