@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import FileUpload from "@/components/file-upload";
 import PDFViewer from "@/components/pdf-viewer";
-import { TemplateType } from "@/types/templates";
 import { Resume, resumeSample } from "@/types/resume";
 import { extractTextFromFile } from "@/lib/file-read";
 import { generateResumePDF } from "@/lib/pdf-generation"; // Importing but not using in either version
@@ -25,7 +24,7 @@ import { TemplatePopup } from "@/components/template-popup";
 import { Skeleton } from "@/components/ui/skeleton";
 import Pricing from "@/components/pricing"; // Import the Pricing component
 import { useUserContext } from "@/context/user-context";
-import { loadUser, saveUser } from "@/lib/firestore-db";
+import { findOrCreateUser, loadUser, saveUser } from "@/lib/firestore-db";
 import { User } from "@/types/user";
 import { createStripeCustomer } from "@/lib/stripe-payment";
 import { useTemplateContext } from "@/context/template-context";
@@ -215,8 +214,6 @@ function CVEditorContent({
   const [website, setWebsite] = useState("");
   const [fileName, setFileName] = useState("No file chosen");
 
-  const searchParams = useSearchParams();
-
   useEffect(() => {
     // Initialize with a default value or based on user data
     setFirstName(clerkUser?.firstName || "");
@@ -237,29 +234,14 @@ function CVEditorContent({
       (async () => {
         // Load user data from Firestore if Clerk user is signed in
         const clerkId = clerkUser.id;
-        let existingUser = await loadUser(clerkId);
-
-        if (!existingUser) {
-          const stripeId = await createStripeCustomer(emailAddress, clerkId);
-          const newUser: User = {
-            stripeId,
-            clerkId,
-            email: emailAddress,
-            data: {
-              profiles: [],
-            },
-          };
-          await saveUser(newUser);
-          setUser(newUser);
-        } else {
-          setUser(existingUser);
-        }
+        const newUser = await findOrCreateUser(clerkId, emailAddress);
+        setUser(newUser);
       })();
     }
 
     // Avoid hydration mismatch
     setMounted(true);
-  }, [searchParams, isLoaded, isSignedIn, router, clerkUser, user]);
+  }, [isLoaded, isSignedIn, router, clerkUser, user]);
 
   const handleFileUpload = (file: File) => {
     setResumeFile(file);

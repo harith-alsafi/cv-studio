@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { TemplateType } from '../types/templates'
 import Image from 'next/image'
 import { useTemplateContext } from '@/context/template-context'
 import { TemplateEntry } from '@/types/latex-template'

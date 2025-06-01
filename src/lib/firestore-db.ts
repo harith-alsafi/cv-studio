@@ -1,7 +1,18 @@
 import { db } from "@/lib/firebase-config"; // Adjust to your Firebase initialization
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, query, collection, where, getDocs } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { User, UserData } from "@/types/user"; // Adjust imports
 import { Resume } from "@/types/resume"; // Adjust imports
+import { createStripeCustomer } from "@/lib/stripe-payment";
 
 export async function loadUser(clerkId: string): Promise<User | null> {
   const userRef = doc(db, "users", clerkId);
@@ -29,4 +40,29 @@ export async function updateUserData(
   await updateDoc(userRef, {
     data: newUserData,
   });
+}
+
+export async function findOrCreateUser(
+  clerkId: string,
+  emailAddress: string
+): Promise<User> {
+  let existingUser = await loadUser(clerkId);
+  if (!existingUser) {
+    const stripeId = await createStripeCustomer(emailAddress, clerkId);
+    const newUser: User = {
+      stripeId,
+      clerkId,
+      email: emailAddress,
+      data: {
+        profiles: [],
+        paymentUsage: {
+          planKey: "free",
+          generationsUsed: 0,
+        },
+      },
+    };
+    await saveUser(newUser);
+    return newUser;
+  }
+  return existingUser;
 }

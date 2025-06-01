@@ -30,15 +30,20 @@ export interface Profile {
   generations: Generation[];
 }
 
+export interface UserPayment{
+  planKey: string;
+  generationsUsed: number;
+}
+
 export interface UserData {
   profiles: Profile[];
-  // Add other fields as necessary
+  paymentUsage: UserPayment;
 }
 
 export interface User {
   clerkId: string;
   email: string;
   stripeId: string;
-
+  
   data: UserData;
 }
