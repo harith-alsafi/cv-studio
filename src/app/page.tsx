@@ -184,7 +184,7 @@ function CVEditorContent({
   closePricingDialog,
 }: CVEditorContentProps) {
   const { isLoaded, isSignedIn, user: clerkUser } = useUser();
-  const { user, setUser } = useUserContext();
+  const { user, initializeUser, clearUserData, isLoading } = useUserContext();
   const { templates } = useTemplateContext();
   const router = useRouter();
   const { toast } = useToast();
@@ -215,33 +215,45 @@ function CVEditorContent({
   const [fileName, setFileName] = useState("No file chosen");
 
   useEffect(() => {
-    // Initialize with a default value or based on user data
-    setFirstName(clerkUser?.firstName || "");
-    setLastName(clerkUser?.lastName || "");
-    setEmail(clerkUser?.emailAddresses[0]?.emailAddress || "");
-    setPhone(clerkUser?.phoneNumbers[0]?.phoneNumber || "");
-    // setAddress - Clerk user object doesn't typically store full address, handle as needed
-    // setWebsite - Clerk user object doesn't typically store website, handle as needed
+        const handleUserAuth = async () => {
+      if (!isLoaded) return;
 
-    if (isLoaded && !isSignedIn) {
-      router.push("/sign-in");
-    }
-    if (clerkUser) {
-      const emailAddress = clerkUser.emailAddresses[0]?.emailAddress || "";
-      setFirstName(clerkUser.firstName || "");
-      setLastName(clerkUser.lastName || "");
-      setEmail(emailAddress);
-      (async () => {
-        // Load user data from Firestore if Clerk user is signed in
-        const clerkId = clerkUser.id;
-        const newUser = await findOrCreateUser(clerkId, emailAddress);
-        setUser(newUser);
-      })();
-    }
+      if (!isSignedIn) {
+        // Clear user data and redirect to sign-in
+        clearUserData();
+        router.push("/sign-in");
+        return;
+      }
+
+      if (clerkUser) {
+        const emailAddress = clerkUser.emailAddresses[0]?.emailAddress || "";
+        
+        // Update form fields with Clerk user data
+        setFirstName(clerkUser.firstName || "");
+        setLastName(clerkUser.lastName || "");
+        setEmail(emailAddress);
+        setPhone(clerkUser.phoneNumbers[0]?.phoneNumber || "");
+
+        // Initialize user data (will check localStorage first, then Firestore)
+        try {
+          await initializeUser(clerkUser.id, emailAddress);
+        } catch (error) {
+          console.error("Error initializing user:", error);
+        }
+      }
+    };
+    handleUserAuth();
 
     // Avoid hydration mismatch
     setMounted(true);
-  }, [isLoaded, isSignedIn, router, clerkUser, user]);
+  }, [isLoaded, isSignedIn, clerkUser, initializeUser, clearUserData, router]);
+
+  // Handle user logout
+  useEffect(() => {
+    if (isLoaded && !isSignedIn && mounted) {
+      clearUserData();
+    }
+  }, [isLoaded, isSignedIn, clearUserData, mounted]);
 
   const handleFileUpload = (file: File) => {
     setResumeFile(file);

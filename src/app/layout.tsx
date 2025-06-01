@@ -8,6 +8,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
 import { UserProvider } from "@/context/user-context";
 import { TemplateProvider } from "@/context/template-context";
+import { UserCleanupHandler } from "@/hooks/use-logout-handler";
 
 // const inter = Inter({ subsets: ['latin'] })
 const geistSans = localFont({
@@ -40,7 +41,10 @@ export default function RootLayout({
         >
           <ThemeProvider attribute="class">
             <TemplateProvider>
-              <UserProvider>{children}</UserProvider>
+              <UserProvider>
+                <UserCleanupHandler />
+                {children}
+              </UserProvider>
             </TemplateProvider>
           </ThemeProvider>
           <Toaster />
