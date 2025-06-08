@@ -14,6 +14,9 @@ interface UserContextType {
   clearUserData: () => void;
 }
 
+// TODO: remove caching from localStorage and use save button to save changes
+// TODO: add a seperate encrypted localStorage cache or useMemo for current changes
+
 // Create the context
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
