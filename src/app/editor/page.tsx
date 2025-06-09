@@ -16,6 +16,7 @@ import { parseYamlTemplate } from '@/lib/latex-template-parse'
 import { useTheme } from 'next-themes'
 import { TopBar } from '@/components/ui/top-bar'
 import { TemplatePopup } from '@/components/template-popup'
+import ResumeEditor from '@/components/resume-editor'
 
 interface OpenAIResponse {
   role: string
@@ -407,7 +408,7 @@ interface OpenAIResponse {
 export default function CVEditor() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      {/* <CVEditorContent /> */}
+      <ResumeEditor/>
     </Suspense>
   );
 }

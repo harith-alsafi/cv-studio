@@ -16,6 +16,7 @@ interface UserContextType {
 
 // TODO: remove caching from localStorage and use save button to save changes
 // TODO: add a seperate encrypted localStorage cache or useMemo for current changes
+// TODO: add local development sdks for clerk ,firestore and stripe as well 
 
 // Create the context
 const UserContext = createContext<UserContextType | undefined>(undefined);

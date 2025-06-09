@@ -1,6 +1,5 @@
 // import { Inter } from 'next/font/google'
 import React from "react";
-import Layout from "@/components/layout";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
@@ -27,29 +26,49 @@ export const metadata = {
   description: "Create professional resumes with ease",
 };
 
-export default function RootLayout({
+function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ThemeProvider attribute="class">
+          <TemplateProvider>
+            <UserProvider>
+              <UserCleanupHandler />
+              {children}
+            </UserProvider>
+          </TemplateProvider>
+        </ThemeProvider>
+        <Toaster />
+      </body>
+    </html>
+  );
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.NODE_ENV === "development") {
+    return (
+      <Layout>
+        {children}
+      </Layout>
+    );
+  }
+
+  return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <head />
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ThemeProvider attribute="class">
-            <TemplateProvider>
-              <UserProvider>
-                <UserCleanupHandler />
-                {children}
-              </UserProvider>
-            </TemplateProvider>
-          </ThemeProvider>
-          <Toaster />
-        </body>
-      </html>
+      <Layout>
+        {children}
+      </Layout>
     </ClerkProvider>
   );
 }
