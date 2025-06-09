@@ -8,5 +8,11 @@
       "enabled": true,
       "port": 9021
     }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "europe-west2",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }
