@@ -54,7 +54,8 @@ export async function findOrCreateUser(
       clerkId,
       email: emailAddress,
       data: {
-        profiles: [],
+        resumes: [],
+        generations: [],
         paymentUsage: {
           planKey: "free",
           generationsUsed: 0,

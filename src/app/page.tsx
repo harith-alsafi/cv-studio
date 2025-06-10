@@ -29,6 +29,7 @@ import { User } from "@/types/user";
 import { createStripeCustomer } from "@/lib/stripe-payment";
 import { useTemplateContext } from "@/context/template-context";
 import { TemplateEntry } from "@/types/latex-template";
+import { useCombinedUser } from "@/hooks/use-combined-user";
 
 interface OpenAIResponse {
   role: string;
@@ -183,8 +184,15 @@ function CVEditorContent({
   openPricingDialog,
   closePricingDialog,
 }: CVEditorContentProps) {
-  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
-  const { user, initializeUser, clearUserData, isLoading } = useUserContext();
+  const {
+    isLoaded,
+    isSignedIn,
+    clerkUser,
+    user,
+    initializeUser,
+    clearUserData,
+    isLoading,
+  } = useCombinedUser();
   const { templates } = useTemplateContext();
   const router = useRouter();
   const { toast } = useToast();
@@ -215,7 +223,7 @@ function CVEditorContent({
   const [fileName, setFileName] = useState("No file chosen");
 
   useEffect(() => {
-        const handleUserAuth = async () => {
+    const handleUserAuth = async () => {
       if (!isLoaded) return;
 
       if (!isSignedIn) {
@@ -227,7 +235,7 @@ function CVEditorContent({
 
       if (clerkUser) {
         const emailAddress = clerkUser.emailAddresses[0]?.emailAddress || "";
-        
+
         // Update form fields with Clerk user data
         setFirstName(clerkUser.firstName || "");
         setLastName(clerkUser.lastName || "");
