@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { usePricingOverlay } from "@/context/pricing-overlay-context";
 import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -28,27 +29,27 @@ function UserAvatar(){
 };
 
 interface TopBarProps {
-  onUpgradeClick?: () => void;
 }
 
-export function TopBar({ onUpgradeClick }: TopBarProps) {
+export function TopBar() {
   const { user } = useUser();
   const { resolvedTheme } = useTheme();
+  const { openOverlay } = usePricingOverlay();
   const [mounted, setMounted] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
 
   // After mounting, we have access to the theme
   useEffect(() => {
-        if (user) {
+    if (user) {
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
       setEmail(user.emailAddresses[0]?.emailAddress || "");    
     }
     setMounted(true);
-  }, []);
+  }, [user]);
 
   return (
     <header className="w-full border-b bg-card text-card-foreground dark:bg-[#1a1f2e] dark:border-[#2a3042]">
@@ -123,8 +124,6 @@ export function TopBar({ onUpgradeClick }: TopBarProps) {
                     User Settings
                   </button>
 
-
-
                   <div className="px-4 py-2 text-sm border-t border-border dark:border-[#2a3042]">
                     <div className="flex justify-between items-center">
                       <p className="text-muted-foreground">Generations Left</p>
@@ -137,13 +136,12 @@ export function TopBar({ onUpgradeClick }: TopBarProps) {
                   </div>
 
                   <div className="px-4 py-2 border-t border-border dark:border-[#2a3042]">
-                    <button
+                    <Button
                       className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md font-medium hover:opacity-90 transition-opacity"
-                      role="menuitem"
-                    onClick={onUpgradeClick}
+                      onClick={openOverlay}
                     >
                       Upgrade to Premium
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

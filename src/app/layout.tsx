@@ -10,6 +10,8 @@ import { TemplateProvider } from "@/context/template-context";
 import { UserCleanupHandler } from "@/hooks/use-logout-handler";
 import { TopBar } from '@/components/ui/top-bar';
 import { Suspense } from 'react';
+import { PricingOverlayProvider } from "@/context/pricing-overlay-context";
+import Pricing from "@/components/pricing";
 
 // const inter = Inter({ subsets: ['latin'] })
 const geistSans = localFont({
@@ -42,11 +44,14 @@ function Layout({
         <ThemeProvider attribute="class">
           <TemplateProvider>
             <UserProvider>
-              <UserCleanupHandler />
-              <TopBar />
-              <Suspense fallback={<div>Loading...</div>}>
-                {children}
-              </Suspense>
+              <PricingOverlayProvider>
+                <UserCleanupHandler />
+                <TopBar />
+                <Suspense fallback={<div>Loading...</div>}>
+                  {children}
+                </Suspense>
+                <Pricing />
+              </PricingOverlayProvider>
             </UserProvider>
           </TemplateProvider>
         </ThemeProvider>

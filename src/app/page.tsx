@@ -2,27 +2,45 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import FileUpload from "@/components/file-upload";
 import PDFViewer from "@/components/pdf-viewer";
 import { Resume, resumeSample } from "@/types/resume";
 import { extractTextFromFile } from "@/lib/file-read";
 import { generateResumePDF } from "@/lib/pdf-generation"; // Importing but not using in either version
-import { ChevronDown, Download, Loader2, Upload } from "lucide-react";
+import { ChevronDown, Download, Loader2, Upload, Trash2, Edit } from "lucide-react";
 import { readYaml } from "@/lib/file-read";
 import { parseYamlTemplate } from "@/lib/latex-template-parse";
 import { useTheme } from "next-themes";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from "@/components/ui/alert-dialog";
 
-import { ToastWithAction } from "./toast-with-action";
+import { ToastWithAction } from "@/components/toast-with-action";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import { TemplatePopup } from "@/components/template-popup";
 import { Skeleton } from "@/components/ui/skeleton";
-import Pricing from "@/components/pricing"; // Import the Pricing component
+ // Import the Pricing component
 import { useUserContext } from "@/context/user-context";
 import { findOrCreateUser, loadUser, saveUser } from "@/lib/firestore-db";
 import { User } from "@/types/user";
@@ -173,13 +191,11 @@ function ResumeGeneratorSkeleton() {
 }
 
 interface CVEditorContentProps {
-  showPricingDialog: boolean;
   openPricingDialog: () => void;
   closePricingDialog: () => void;
 }
 
 function CVEditorContent({
-  showPricingDialog,
   openPricingDialog,
   closePricingDialog,
 }: CVEditorContentProps) {
@@ -199,6 +215,12 @@ function CVEditorContent({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [parsedData, setParsedData] = useState<Resume | null>(null);
+  const [resumes, setResumes] = useState([
+    { id: "1", name: "Resume 1" },
+    { id: "2", name: "Resume 2" },
+  ]);
+  const [selectedResume, setSelectedResume] = useState<{ id: string; name: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [language, setLanguage] = useState("English"); // Keep language state for API calls
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -254,6 +276,37 @@ function CVEditorContent({
       clearUserData();
     }
   }, [isLoaded, isSignedIn, clearUserData, mounted]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const newResume = { id: Date.now().toString(), name: file.name };
+      setResumes(prev => [newResume, ...prev]);
+      setSelectedResume(newResume);
+      handleFileUpload(file);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    setResumes(prev => prev.filter(r => r.id !== id));
+    if (selectedResume?.id === id) {
+      setSelectedResume(null);
+      setResumeFile(null);
+      setFileName("No file chosen");
+    }
+  };
+
+  const handleRename = (id: string) => {
+    const resumeToRename = resumes.find(r => r.id === id);
+    const newName = prompt("Enter new name for the resume:", resumeToRename?.name || "");
+    if (newName && newName.trim() !== "") {
+      const updatedResumes = resumes.map(r => (r.id === id ? { ...r, name: newName.trim() } : r));
+      setResumes(updatedResumes);
+      if (selectedResume?.id === id) {
+        setSelectedResume(prev => (prev ? { ...prev, name: newName.trim() } : null));
+      }
+    }
+  };
 
   const handleFileUpload = (file: File) => {
     setResumeFile(file);
@@ -460,11 +513,11 @@ function CVEditorContent({
         <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm flex flex-col h-full overflow-hidden relative">
           <div className="space-y-6 p-6 flex-grow overflow-y-auto">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-foreground">Template</h2>
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-foreground mb-2">Template</h2>
                 <Button
                   variant="outline"
-                  className="w-[180px] bg-card border-border hover:bg-secondary hover:text-secondary-foreground flex justify-between items-center transition-colors"
+                  className="w-[280px] bg-card border-border hover:bg-secondary hover:text-secondary-foreground flex justify-between items-center transition-colors"
                   onClick={() => setIsTemplatePopupOpen(true)}
                 >
                   <span>{templateName}</span>
@@ -474,16 +527,62 @@ function CVEditorContent({
             </div>
 
             <div>
-              <h2 className="text-lg font-semibold mb-2 text-foreground">Upload Resume</h2>
-              <div className="flex items-center gap-2">
-                <FileUpload onFileUpload={handleFileUpload} />
-                <span className="text-sm text-muted-foreground">
-                  {fileName}
-                </span>
+              <label className="text-lg font-medium">Upload Resume</label>
+              <div className="flex items-center gap-2 mt-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-[280px] justify-between">
+                      {selectedResume ? selectedResume.name : "Select Resume"}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[280px]">
+                    <DropdownMenuItem onSelect={() => fileInputRef.current?.click()}>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Upload New
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {resumes.map((r) => (
+                      <DropdownMenuItem key={r.id} onSelect={() => setSelectedResume(r)}>
+                        <div className="flex justify-between items-center w-full">
+                          <span>{r.name}</span>
+                          <div className="flex items-center gap-0">
+                            <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleRename(r.id); }} className="opacity-60 hover:opacity-100">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()} className="opacity-60 hover:opacity-100">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the resume.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDelete(r.id)}>Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept=".pdf,.yaml,.yml"
+                />
               </div>
-              {error && (
-                <div className="mt-2 text-destructive text-sm">Error: {error}</div>
-              )}
             </div>
 
             <div>
@@ -640,32 +739,19 @@ function CVEditorContent({
           )}
         </div>
       </div>
-      {/* Pricing Dialog */}
-      {showPricingDialog && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border p-6 rounded-lg shadow-xl max-w-3xl w-full mx-auto">
-            <Pricing onClose={closePricingDialog} />
-          </div>
-        </div>
-      )}
     </main>
   );
 }
 
 export default function CVEditor() {
-  const [showPricingDialog, setShowPricingDialog] = useState(false);
-  const openPricingDialog = () => setShowPricingDialog(true);
-  const closePricingDialog = () => setShowPricingDialog(false);
-
   return (
     <Suspense fallback={<ResumeGeneratorSkeleton />}>
       <CVEditorContent
-        showPricingDialog={showPricingDialog}
-        openPricingDialog={openPricingDialog}
-        closePricingDialog={closePricingDialog}
+        openPricingDialog={() => {}}
+        closePricingDialog={() => {}}
       />
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <ToastWithAction onOpenPricingDialog={openPricingDialog} />
+        <ToastWithAction  />
       </div>
     </Suspense>
   );

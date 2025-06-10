@@ -164,6 +164,23 @@ export default function JobTrackerDashboard() {
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-6 lg:px-8">
+      {/* Create New CV Button */}
+      <div className="flex justify-center mb-10">
+        <Link href="/" passHref legacyBehavior>
+          <a>
+            <Button
+              className="flex items-center justify-center gap-8 px-12 py-8 text-3xl font-extrabold rounded-2xl shadow-xl text-white border-0 focus:outline-none"
+              style={{
+                minWidth: 380,
+                background: 'linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)',
+                boxShadow: '0 8px 32px rgba(37,99,235,0.25)'
+              }}
+            >
+              Create CV
+            </Button>
+          </a>
+        </Link>
+      </div>
 
 
       {/* Stats Section */}

@@ -1,4 +1,3 @@
-// src/app/parser-test/page.tsx
 "use client";
 
 import { useState } from 'react';
