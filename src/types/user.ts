@@ -47,3 +47,13 @@ export interface User {
   
   data: UserData;
 }
+
+const userSample: User = {
+  clerkId: "123c",
+  email: "john.smith@yahoo.com",
+  stripeId: "123s",
+
+  data: {
+    
+  }
+}

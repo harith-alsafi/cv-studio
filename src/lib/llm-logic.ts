@@ -189,42 +189,10 @@ const resumeResponseFormat: ResponseFormatJSONSchema = {
   },
 };
 
-export async function LLMResponse(systemMessage:string, userMessage: string): Promise <Resume>{ 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: systemMessage,
-      },
-      {
-        role: "user",
-        content: userMessage
-      },
-    ],
-    response_format: resumeResponseFormat,
-    temperature: 1,
-    max_tokens: 2048,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-  });
-} 
-
-export async function LLMParseResume(
-  text: string,
-  jobDescription: string | null = null
+export async function LLMResumeResponse(
+  systemMessage: string,
+  userMessage: string
 ): Promise<Resume | null> {
-  // Base system message
-  let systemMessage =
-    "You are an expert resume parser. Extract relevant information from the resume into the specified JSON schema format.";
-
-  // Add job description context if provided
-  if (jobDescription) {
-    systemMessage +=
-      " The extracted information should be tailored to highlight aspects that are most relevant to the provided job description. Focus on skills, experiences, and qualifications that align with the job requirements.";
-  }
-
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -234,14 +202,7 @@ export async function LLMParseResume(
       },
       {
         role: "user",
-        content: [
-          {
-            type: "text",
-            text: `Resume Content:\n${text}${
-              jobDescription ? `\n\nJob Description:\n${jobDescription}` : ""
-            }`,
-          },
-        ],
+        content: userMessage,
       },
     ],
     response_format: resumeResponseFormat,
@@ -255,4 +216,36 @@ export async function LLMParseResume(
   const resume: Resume | null =
     msg !== null ? (JSON.parse(msg) as Resume) : null;
   return resume;
+}
+
+export async function LLMParseResume(
+  text: string,
+  jobDescription: string | null = null
+): Promise<Resume | null> {
+  let systemMessage =
+    "You are an expert resume parser. Extract relevant information from the resume into the specified JSON schema format.";
+
+  // Add job description context if provided
+  if (jobDescription) {
+    systemMessage +=
+      " The extracted information should be tailored to highlight aspects that are most relevant to the provided job description. Focus on skills, experiences, and qualifications that align with the job requirements.";
+  }
+
+  const userMessage = `Resume Content:\n${text}${
+    jobDescription ? `\n\nJob Description:\n${jobDescription}` : ""
+  }`;
+
+  return await LLMResumeResponse(systemMessage, userMessage);
+}
+
+export async function LLMGenerateResume(){
+
+}
+
+export async function LLMGenerateCoverLetter(){
+
+}
+
+export async function LLMGenerateIntervieQuestions(){
+  
 }
