@@ -8,6 +8,8 @@ import { ThemeProvider } from "next-themes";
 import { UserProvider } from "@/context/user-context";
 import { TemplateProvider } from "@/context/template-context";
 import { UserCleanupHandler } from "@/hooks/use-logout-handler";
+import { TopBar } from '@/components/ui/top-bar';
+import { Suspense } from 'react';
 
 // const inter = Inter({ subsets: ['latin'] })
 const geistSans = localFont({
@@ -41,7 +43,10 @@ function Layout({
           <TemplateProvider>
             <UserProvider>
               <UserCleanupHandler />
-              {children}
+              <TopBar />
+              <Suspense fallback={<div>Loading...</div>}>
+                {children}
+              </Suspense>
             </UserProvider>
           </TemplateProvider>
         </ThemeProvider>

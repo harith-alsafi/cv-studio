@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { User, Settings, CreditCard, ChevronDown } from "lucide-react";
+import { User, Settings, CreditCard, ChevronDown, LayoutDashboard, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function UserAvatar(){
@@ -71,6 +71,21 @@ export function TopBar({ onUpgradeClick }: TopBarProps) {
             ) : (
               <div className="h-10 w-[120px]"></div> /* Placeholder with same dimensions */
             )}
+          </Link>
+        </div>
+
+        <div className="flex-1 flex justify-center items-center gap-4">
+          <Link href="/dashboard" passHref>
+            <Button variant="ghost" className="flex items-center gap-2">
+              <LayoutDashboard className="h-5 w-5" />
+              Dashboard
+            </Button>
+          </Link>
+          <Link href="/" passHref>
+            <Button variant="ghost" className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Resume Maker
+            </Button>
           </Link>
         </div>
 

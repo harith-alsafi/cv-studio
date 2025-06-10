@@ -16,7 +16,7 @@ import { ChevronDown, Download, Loader2, Upload } from "lucide-react";
 import { readYaml } from "@/lib/file-read";
 import { parseYamlTemplate } from "@/lib/latex-template-parse";
 import { useTheme } from "next-themes";
-import { TopBar } from "@/components/ui/top-bar";
+
 import { ToastWithAction } from "./toast-with-action";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
@@ -445,7 +445,7 @@ function CVEditorContent({
 
   return (
     <main className="min-h-screen w-full bg-background flex flex-col overflow-hidden">
-      <TopBar onUpgradeClick={openPricingDialog} />
+
 
       <TemplatePopup
         isOpen={isTemplatePopupOpen}
