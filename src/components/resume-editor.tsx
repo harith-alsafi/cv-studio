@@ -8,9 +8,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronUp, Plus, Trash2, ArrowUp, ArrowDown, Save } from 'lucide-react';
 import { Resume, resumeSample, Section } from '@/types/resume';
 
-// TODO: add calender for date and time 
-// TODO: dont render sections that are not available in template, maybe indicate this in the db or have some template spec 
-
 const ResumeEditor = () => {
     const [resume, setResume] = useState<Resume>(resumeSample);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
