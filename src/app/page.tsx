@@ -2,27 +2,45 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import FileUpload from "@/components/file-upload";
 import PDFViewer from "@/components/pdf-viewer";
 import { Resume, resumeSample } from "@/types/resume";
 import { extractTextFromFile } from "@/lib/file-read";
 import { generateResumePDF } from "@/lib/pdf-generation"; // Importing but not using in either version
-import { ChevronDown, Download, Loader2, Upload } from "lucide-react";
+import { ChevronDown, Download, Loader2, Upload, Trash2, Edit } from "lucide-react";
 import { readYaml } from "@/lib/file-read";
 import { parseYamlTemplate } from "@/lib/latex-template-parse";
 import { useTheme } from "next-themes";
-import { TopBar } from "@/components/ui/top-bar";
-import { ToastWithAction } from "./toast-with-action";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from "@/components/ui/alert-dialog";
+
+import { ToastWithAction } from "@/components/toast-with-action";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import { TemplatePopup } from "@/components/template-popup";
 import { Skeleton } from "@/components/ui/skeleton";
-import Pricing from "@/components/pricing"; // Import the Pricing component
+ // Import the Pricing component
 import { useUserContext } from "@/context/user-context";
 import { findOrCreateUser, loadUser, saveUser } from "@/lib/firestore-db";
 import { User } from "@/types/user";
@@ -39,15 +57,15 @@ interface OpenAIResponse {
 
 function ResumeGeneratorSkeleton() {
   return (
-    <div className="min-h-screen w-full bg-background dark:bg-[#111827] flex flex-col overflow-hidden">
+    <div className="min-h-screen w-full bg-background flex flex-col overflow-hidden">
       {/* TopBar Skeleton */}
-      <div className="w-full p-4 border-b">
+      <div className="w-full p-4 border-b border-border">
         <Skeleton className="h-8 w-48" />
       </div>
 
       <div className="py-6 flex-1 px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1440px] mx-auto">
         {/* Left Panel - Form Skeleton */}
-        <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+        <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
           <div className="space-y-6">
             {/* Template Section */}
             <div>
@@ -127,7 +145,7 @@ function ResumeGeneratorSkeleton() {
         </div>
 
         {/* Right Panel - PDF Viewer Skeleton */}
-        <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm flex flex-col dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+        <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm flex flex-col">
           <div className="flex-1 overflow-hidden relative">
             {/* PDF Viewer Area */}
             <div className="h-full flex flex-col gap-4">
@@ -138,7 +156,7 @@ function ResumeGeneratorSkeleton() {
               </div>
 
               {/* PDF Content Area */}
-              <div className="flex-1 border rounded-lg p-4 space-y-4">
+              <div className="flex-1 border border-border rounded-lg p-4 space-y-4">
                 {/* Header section */}
                 <div className="text-center space-y-2">
                   <Skeleton className="h-8 w-48 mx-auto" />
@@ -174,13 +192,11 @@ function ResumeGeneratorSkeleton() {
 }
 
 interface CVEditorContentProps {
-  showPricingDialog: boolean;
   openPricingDialog: () => void;
   closePricingDialog: () => void;
 }
 
 function CVEditorContent({
-  showPricingDialog,
   openPricingDialog,
   closePricingDialog,
 }: CVEditorContentProps) {
@@ -207,6 +223,12 @@ function CVEditorContent({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [parsedData, setParsedData] = useState<Resume | null>(null);
+  const [resumes, setResumes] = useState([
+    { id: "1", name: "Resume 1" },
+    { id: "2", name: "Resume 2" },
+  ]);
+  const [selectedResume, setSelectedResume] = useState<{ id: string; name: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [language, setLanguage] = useState("English"); // Keep language state for API calls
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -262,6 +284,37 @@ function CVEditorContent({
       clearUserData();
     }
   }, [isLoaded, isSignedIn, clearUserData, mounted]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const newResume = { id: Date.now().toString(), name: file.name };
+      setResumes(prev => [newResume, ...prev]);
+      setSelectedResume(newResume);
+      handleFileUpload(file);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    setResumes(prev => prev.filter(r => r.id !== id));
+    if (selectedResume?.id === id) {
+      setSelectedResume(null);
+      setResumeFile(null);
+      setFileName("No file chosen");
+    }
+  };
+
+  const handleRename = (id: string) => {
+    const resumeToRename = resumes.find(r => r.id === id);
+    const newName = prompt("Enter new name for the resume:", resumeToRename?.name || "");
+    if (newName && newName.trim() !== "") {
+      const updatedResumes = resumes.map(r => (r.id === id ? { ...r, name: newName.trim() } : r));
+      setResumes(updatedResumes);
+      if (selectedResume?.id === id) {
+        setSelectedResume(prev => (prev ? { ...prev, name: newName.trim() } : null));
+      }
+    }
+  };
 
   const handleFileUpload = (file: File) => {
     setResumeFile(file);
@@ -452,8 +505,8 @@ function CVEditorContent({
   }
 
   return (
-    <main className="min-h-screen w-full bg-background dark:bg-[#111827] flex flex-col overflow-hidden">
-      <TopBar onUpgradeClick={openPricingDialog} />
+    <main className="min-h-screen w-full bg-background flex flex-col overflow-hidden">
+
 
       <TemplatePopup
         isOpen={isTemplatePopupOpen}
@@ -465,14 +518,14 @@ function CVEditorContent({
       />
 
       <div className="py-6 flex-1 px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1440px] mx-auto">
-        <div className="bg-card text-card-foreground rounded-lg border shadow-sm dark:bg-[#1a1f2e] dark:border-[#2a3042] flex flex-col h-full overflow-hidden relative">
+        <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm flex flex-col h-full overflow-hidden relative">
           <div className="space-y-6 p-6 flex-grow overflow-y-auto">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Template</h2>
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-foreground mb-2">Template</h2>
                 <Button
                   variant="outline"
-                  className="w-[180px] dark:bg-[#2a3042] dark:border-[#3a4055] flex justify-between items-center"
+                  className="w-[280px] bg-card border-border hover:bg-secondary hover:text-secondary-foreground flex justify-between items-center transition-colors"
                   onClick={() => setIsTemplatePopupOpen(true)}
                 >
                   <span>{templateName}</span>
@@ -482,32 +535,78 @@ function CVEditorContent({
             </div>
 
             <div>
-              <h2 className="text-lg font-semibold mb-2">Upload Resume</h2>
-              <div className="flex items-center gap-2">
-                <FileUpload onFileUpload={handleFileUpload} />
-                <span className="text-sm text-muted-foreground">
-                  {fileName}
-                </span>
+              <label className="text-lg font-medium">Upload Resume</label>
+              <div className="flex items-center gap-2 mt-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-[280px] justify-between">
+                      {selectedResume ? selectedResume.name : "Select Resume"}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[280px]">
+                    <DropdownMenuItem onSelect={() => fileInputRef.current?.click()}>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Upload New
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {resumes.map((r) => (
+                      <DropdownMenuItem key={r.id} onSelect={() => setSelectedResume(r)}>
+                        <div className="flex justify-between items-center w-full">
+                          <span>{r.name}</span>
+                          <div className="flex items-center gap-0">
+                            <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleRename(r.id); }} className="opacity-60 hover:opacity-100">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()} className="opacity-60 hover:opacity-100">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the resume.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDelete(r.id)}>Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept=".pdf,.yaml,.yml"
+                />
               </div>
-              {error && (
-                <div className="mt-2 text-red-600 text-sm">Error: {error}</div>
-              )}
             </div>
 
             <div>
-              <h2 className="text-lg font-semibold mb-2">Job Title</h2>
+              <h2 className="text-lg font-semibold mb-2 text-foreground">Job Title</h2>
               <Input
                 value={jobTitle}
                 onChange={(e) => setJobTitle(e.target.value)}
-                className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                className="w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
               />
             </div>
 
             <div>
-              <h2 className="text-lg font-semibold mb-2">Job Description</h2>
+              <h2 className="text-lg font-semibold mb-2 text-foreground">Job Description</h2>
               <Textarea
                 placeholder="Paste the job description here"
-                className="min-h-[120px] w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                className="min-h-[120px] w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
               />
@@ -517,7 +616,7 @@ function CVEditorContent({
               <Button
                 variant="ghost"
                 onClick={toggleAdditionalInfo}
-                className="flex items-center gap-2 text-[hsl(var(--cv-accent))] p-0 h-auto"
+                className="flex items-center gap-2 text-primary hover:text-primary/90 hover:bg-accent/10 p-0 h-auto transition-colors"
               >
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
@@ -530,27 +629,27 @@ function CVEditorContent({
               {showAdditionalInfo && (
                 <div className="mt-4 space-y-4 animate-in slide-in-from-top-5 duration-300">
                   <div>
-                    <h2 className="text-lg font-semibold mb-2">First Name</h2>
+                    <h2 className="text-lg font-semibold mb-2 text-foreground">First Name</h2>
                     <Input
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="Enter first name"
-                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                      className="w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     />
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold mb-2">Last Name</h2>
+                    <h2 className="text-lg font-semibold mb-2 text-foreground">Last Name</h2>
                     <Input
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Enter last name"
-                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                      className="w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     />
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold mb-2">
+                    <h2 className="text-lg font-semibold mb-2 text-foreground">
                       Email Address
                     </h2>
                     <Input
@@ -558,50 +657,50 @@ function CVEditorContent({
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter email address"
                       type="email"
-                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                      className="w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     />
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold mb-2">Phone</h2>
+                    <h2 className="text-lg font-semibold mb-2 text-foreground">Phone</h2>
                     <Input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Enter your phone number"
                       type="tel"
-                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                      className="w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     />
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold mb-2">Address</h2>
+                    <h2 className="text-lg font-semibold mb-2 text-foreground">Address</h2>
                     <Input
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="Enter your address"
-                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                      className="w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     />
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold mb-2">Website</h2>
+                    <h2 className="text-lg font-semibold mb-2 text-foreground">Website</h2>
                     <Input
                       value={website}
                       onChange={(e) => setWebsite(e.target.value)}
                       placeholder="Enter your website or portfolio"
                       type="url"
-                      className="w-full dark:bg-[#2a3042] dark:border-[#3a4055]"
+                      className="w-full bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     />
                   </div>
                 </div>
               )}
             </div>
           </div>
-          <div className="p-4 border-t bg-card dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+          <div className="p-4 border-t border-border bg-card">
             <Button
               onClick={handleGenerate}
               disabled={!resumeFile || loading}
-              className="w-full px-8 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
+              className="w-full px-8 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold transition-all duration-200 hover:shadow-lg"
               size="lg"
             >
               {loading ? (
@@ -616,12 +715,10 @@ function CVEditorContent({
           </div>
         </div>
 
-        <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm flex flex-col dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+        <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm flex flex-col">
           <div className="flex-1 overflow-hidden relative">
-            {" "}
-            {/* Added 'relative' for proper loading overlay */}
             {loading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
+              <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10 rounded-lg">
                 <div className="flex flex-col items-center gap-2">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   <p className="text-sm text-muted-foreground">
@@ -641,7 +738,7 @@ function CVEditorContent({
             <div className="mt-4 flex justify-end">
               <Button
                 onClick={handleDownload}
-                className="flex items-center gap-2 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold"
+                className="flex items-center gap-2 bg-[hsl(var(--cv-button))] hover:bg-[hsl(var(--cv-button-hover))] text-white font-bold transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
               >
                 <Download className="h-4 w-4" />
                 Download CV
@@ -650,32 +747,19 @@ function CVEditorContent({
           )}
         </div>
       </div>
-      {/* Pricing Dialog */}
-      {showPricingDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-card p-6 rounded-lg shadow-xl max-w-3xl w-full mx-auto">
-            <Pricing onClose={closePricingDialog} />
-          </div>
-        </div>
-      )}
     </main>
   );
 }
 
 export default function CVEditor() {
-  const [showPricingDialog, setShowPricingDialog] = useState(false);
-  const openPricingDialog = () => setShowPricingDialog(true);
-  const closePricingDialog = () => setShowPricingDialog(false);
-
   return (
     <Suspense fallback={<ResumeGeneratorSkeleton />}>
       <CVEditorContent
-        showPricingDialog={showPricingDialog}
-        openPricingDialog={openPricingDialog}
-        closePricingDialog={closePricingDialog}
+        openPricingDialog={() => {}}
+        closePricingDialog={() => {}}
       />
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <ToastWithAction onOpenPricingDialog={openPricingDialog} />
+        <ToastWithAction  />
       </div>
     </Suspense>
   );

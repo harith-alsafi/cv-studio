@@ -142,7 +142,7 @@ const ResumeEditor = () => {
         const canMoveDown = index < sections.length - 1;
 
         return (
-            <Card key={index} className="mb-4 outline outline-1 outline-gray-700">
+            <Card key={index} className="mb-4 border-2 border-muted-foreground">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <div className="text-lg font-medium">{sectionType.charAt(0).toUpperCase() + sectionType.slice(1)} {index + 1}</div>
                     <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const ResumeEditor = () => {
                             variant="outline"
                             size="default"
                             onClick={() => removeSection(sectionType, index)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 h-10 w-10 p-0"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-10 p-0"
                         >
                             <Trash2 className="h-5 w-5" />
                         </Button>
@@ -541,7 +541,7 @@ const ResumeEditor = () => {
                                                     variant="outline"
                                                     size="default"
                                                     onClick={() => removeLanguage(index)}
-                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 h-10 w-10 p-0"
+                                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-10 p-0"
                                                 >
                                                     <Trash2 className="h-5 w-5" />
                                                 </Button>
@@ -615,7 +615,7 @@ const ResumeEditor = () => {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => removeSkill(index)}
-                                                    className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+                                                    className="text-destructive hover:text-destructive h-8 w-8 p-0"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>

@@ -2,12 +2,12 @@
 
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { TopBar } from '@/components/ui/top-bar'
+
 
 export default function AboutUs() {
     return (
         <main className="min-h-screen w-full bg-background dark:bg-[#111827] flex flex-col overflow-hidden">
-            <TopBar />
+
             <div className="py-6 flex-1 px-4 md:px-6">
                 <div className="max-w-3xl mx-auto">
                     <h1 className="text-3xl font-bold mb-2">About Us</h1>

@@ -8,58 +8,48 @@ body {
   font-family: "Inter", sans-serif;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
 }
 
 @layer base {
   input,
   textarea,
   select {
-    @apply bg-[hsl(var(--input-background))];
+    @apply bg-card; /* Use card background (white in light mode) for inputs */
   }
 }
 
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 210 60% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
+    --primary-hover: 223 79% 48%; /* New variable for primary hover state */
+    --secondary: 210 60% 98%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 60% 98%;
+    --muted-foreground: 215 25% 46%;
+    --accent: 221 83% 53%; /* Aligned with primary as per example style */
+    --accent-foreground: 210 40% 98%; /* Text color for accent elements */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.65rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    /* CV Studio specific colors */
-    --cv-button: 221.2 83.2% 53.3%;
-    --cv-button-hover: 221.2 83.2% 47.3%;
-    --cv-accent: 25 95% 53%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --danger-hover: 0 70% 50%; /* New variable for danger hover state */
+    --success: 159 83% 39%; /* New variable for success states */
+    --success-foreground: 210 40% 98%; /* Text color for success elements */
+    --border: 216 33% 91%;
+    --input: 216 33% 91%; /* Border color for inputs and outline buttons */
+    --ring: 221 83% 53%; /* Focus ring color */
+    --radius: 0.65rem; /* Kept from original */
+    
+    /* CV Studio specific colors - updated to new palette */
+    --cv-button: 221 83% 53%;
+    --cv-button-hover: 223 79% 48%;
+    --cv-accent: 221 83% 53%; /* Aligned with primary */
+    
   }
 
   .dark {
@@ -82,27 +72,12 @@ body {
     --border: 217.2 32.6% 17.5%;
     --input: 222 18% 27%;  
     --ring: 224.3 76.3% 48%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --radius: 0.5rem;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
     --cv-button: 221.2 83.2% 53.3%;
     --cv-button-hover: 221.2 83.2% 47.3%;
     --cv-accent: 25 95% 53%;
+    
   }
 }
-
-
 
 @layer base {
   * {
@@ -117,162 +92,72 @@ body {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+  }
+}
+/* Print Styles */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print {
+    display: none !important;
   }
 }
 
-/* Ensure button text is white in both themes */
-.text-white {
-  color: white !important;
-}
-
-/* Animation utilities */
-@keyframes slide-in-from-top {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-in {
-  animation-duration: 300ms;
-  animation-timing-function: ease-out;
-  animation-fill-mode: both;
-}
-
-.slide-in-from-top-5 {
-  animation-name: slide-in-from-top;
-}
-
-.duration-300 {
-  animation-duration: 300ms;
-}
-
-/* Add these additional shadow overrides to your existing CSS */
-
-/* Target the main clerk container */
-.cl-rootBox,
-.cl-modalContent,
-.cl-modalBackdrop {
-  @apply !shadow-none;
-}
-
-/* More specific targeting for the sign-in/sign-up modals */
-.cl-signIn-root,
-.cl-signUp-root {
-  @apply !shadow-none;
-}
-
-/* Target all clerk components with shadows */
-.cl-card,
-.cl-cardBox,
-.cl-modalContent,
-.cl-userButtonPopoverCard,
-.cl-menuList,
-.cl-actionCard {
-  @apply !shadow-none border border-input;
-}
-
-/* Ensure the footer doesn't have shadows */
-.cl-footer,
-.cl-userButtonPopoverFooter {
-  @apply !shadow-none;
-}
-
-/* Override any remaining shadows with higher specificity */
-[data-clerk-modal],
-[data-clerk-modal] * {
-  box-shadow: none !important;
-}
-
-/* Alternative approach - target by component state */
-.cl-signIn-start .cl-card,
-.cl-signUp-start .cl-card,
-.cl-signIn-password .cl-card,
-.cl-signIn-alternativeMethods .cl-card,
-.cl-signIn-emailCode .cl-card {
-  @apply !shadow-none;
-}
-
-/* Your existing CSS continues below... */
-.cl-formButtonPrimary {
-  @apply inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary px-3  font-medium text-primary-foreground !shadow-none ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
-}
-
-.cl-card,
-.cl-socialButtonsBlockButton,
-.cl-alert,
-.cl-phoneInputBox,
+/* Clerk Component Overrides - if needed */
 .cl-userButtonPopoverCard {
-  @apply rounded-lg border border-input bg-background !shadow-none;
+  @apply bg-card border border-border shadow-lg !important;
 }
 
-.cl-headerTitle,
-.cl-socialButtonsBlockButtonText,
-.cl-loading,
-.cl-formFieldLabel,
-.cl-formHeaderTitle,
-.cl-selectButton__countryCode,
-.cl-selectButton__countryCode p,
-.cl-selectOption p,
-.cl-selectOption div,
-.cl-modalCloseButton,
-.cl-navbarButton,
-.cl-breadcrumbsItem.cl-breadcrumbsItem__currentPage,
-.cl-profileSectionTitle p,
-.cl-userPreviewTextContainer,
-.cl-profileSectionContent p,
-.cl-form p,
-.cl-accordionTriggerButton {
-  @apply dark:text-foreground;
+.cl-userButtonPopoverActionButton {
+  @apply text-foreground hover:bg-accent !important;
 }
 
-.cl-headerSubtitle,
-.cl-dividerText,
-.cl-footerActionText,
-.cl-alertText,
-.cl-formFieldInfoText,
-.cl-formFieldSuccessText,
-.cl-identityPreviewText,
-.cl-userButtonPopoverActionButton,
-.cl-userButtonPopoverActionButton svg,
-.cl-userButtonPopoverActionButtonText,
-.cl-userButtonPopoverFooter p,
-.cl-userButtonPopoverFooter a,
-.cl-formHeaderSubtitle,
-.cl-breadcrumbsItem,
-.cl-breadcrumbsItemDivider,
-.cl-fileDropAreaHint,
-.cl-fileDropAreaFooterHint,
-.cl-form
-  p[data-localization-key="userProfile.emailAddressPage.emailCode.formHint"],
-p[data-localization-key="userProfile.profilePage.successMessage"] {
-  @apply text-muted-foreground;
+.cl-userButtonPopoverActionButton__icon {
+  @apply text-muted-foreground !important;
+}
+
+.cl-formButtonPrimary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 !important;
+}
+
+.cl-socialButtonsBlockButton {
+  @apply border-border hover:bg-accent !important;
 }
 
 .cl-dividerLine {
-  @apply bg-border;
+  @apply bg-border !important;
 }
 
-.cl-formFieldInput[type="text"],
-.cl-formFieldInput[type="email"],
-.cl-formFieldInput[type="password"] {
-  @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+.cl-formFieldInput {
+  @apply bg-input border-border focus:ring-ring focus:border-ring !important;
 }
 
-.cl-footerActionLink {
-  @apply text-accent-foreground underline hover:text-accent-foreground/90;
+.cl-avatarBox {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-background !important;
 }
 
-.cl-otpCodeFieldInput {
-  @apply !border !border-input text-foreground;
+.cl-card {
+  @apply bg-card border border-border shadow-xl !important;
 }
 
-.cl-formResendCodeLink {
-  @apply text-primary disabled:opacity-90;
+.cl-headerTitle {
+  @apply text-foreground !important;
+}
+
+.cl-headerSubtitle {
+  @apply text-muted-foreground !important;
+}
+
+.cl-identityPreviewEditButton {
+  @apply text-primary hover:text-primary/90 !important;
+}
+
+.cl-identityPreview {
+  @apply bg-muted/50 border-border !important;
 }
 
 .cl-selectSearchInput__countryCode {
@@ -280,9 +165,12 @@ p[data-localization-key="userProfile.profilePage.successMessage"] {
 }
 
 .cl-selectOptionsContainer__countryCode {
-  @apply border border-input bg-background;
+  @apply absolute z-50 w-full overflow-auto rounded-md bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2;
+  @apply max-h-60;
 }
 
+.cl-selectOption__countryCode {
+  @apply relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
 .cl-internal-icon,
 .cl-userPreviewSecondaryIdentifier__userButton {
   @apply text-foreground;
@@ -340,8 +228,9 @@ button[data-localization-key="userProfile.start.dangerSection.deleteAccountButto
 }
 
 .cl-footer {
-  @apply !shadow-none rounded-b-lg border-x border-b bg-background bg-gradient-to-t from-background to-background  text-muted-foreground;
+  @apply !shadow-none rounded-b-lg border-x border-b bg-background bg-gradient-to-t from-background to-background text-muted-foreground;
 }
+
 .cl-userButtonPopoverFooter {
   @apply rounded-b-lg bg-gradient-to-t from-background to-background !shadow-none;
 }
@@ -421,4 +310,5 @@ h1[data-localization-key="userProfile.navbar.title"] {
 
 .cl-navbarMobileMenuButton {
   @apply text-foreground;
+}
 }
