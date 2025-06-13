@@ -46,9 +46,12 @@ function Layout({
             <UserProvider>
               <PricingOverlayProvider>
                 <UserCleanupHandler />
-                <TopBar />
+                
                 <Suspense fallback={<div>Loading...</div>}>
+                <TopBar />
+                <main className="min-h-screen w-full bg-background flex flex-col overflow-hidden pt-16">
                   {children}
+                  </main>
                 </Suspense>
                 <Pricing />
               </PricingOverlayProvider>

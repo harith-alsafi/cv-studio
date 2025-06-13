@@ -166,19 +166,17 @@ export default function JobTrackerDashboard() {
     <div className="container mx-auto py-8 px-4 md:px-6 lg:px-8">
       {/* Create New CV Button */}
       <div className="flex justify-center mb-10">
-        <Link href="/" passHref legacyBehavior>
-          <a>
+        <Link href="/" passHref>
             <Button
-              className="flex items-center justify-center gap-8 px-12 py-8 text-3xl font-extrabold rounded-2xl shadow-xl text-white border-0 focus:outline-none"
+              className="flex items-center justify-center gap-8 px-10 py-6 text-2xl font-extrabold rounded-2xl shadow-xl text-white border-0 focus:outline-none"
               style={{
-                minWidth: 380,
+                // minWidth: 380,
                 background: 'linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)',
                 boxShadow: '0 8px 32px rgba(37,99,235,0.25)'
               }}
             >
               Create CV
             </Button>
-          </a>
         </Link>
       </div>
 
@@ -237,7 +235,7 @@ export default function JobTrackerDashboard() {
             </div>
             <div className="flex gap-4 w-full md:w-auto">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectTrigger className="w-full md:w-[180px] h-full">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -249,8 +247,8 @@ export default function JobTrackerDashboard() {
                         <SelectItem value="rejected">Rejected</SelectItem>
                     </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={() => setIsEditMode(!isEditMode)}>
-                    <Edit className="mr-2 h-4 w-4" />
+                <Button variant="outline" className="h-full" onClick={() => setIsEditMode(!isEditMode)}>
+                    <Edit className="mr-2 w-4 h-4" />
                     {isEditMode ? 'Cancel' : 'Edit'}
                 </Button>
             </div>

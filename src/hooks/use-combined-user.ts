@@ -18,8 +18,36 @@ export interface UseCombinedUser {
 export function useCombinedUser(): UseCombinedUser {
   const isDevelopment = process.env.NODE_ENV === "development";
 
+  // Hook 2: User context hook
+  const { user, initializeUser, clearUserData, isLoading, setUser } =
+    useUserContext();
+
+  const dummyClerkUser = user
+    ? {
+        id: user.clerkId,
+        primaryEmailAddress: {
+          emailAddress: user.email,
+        },
+        primaryPhoneNumber: {
+          phoneNumber: "+1234567890", // Placeholder phone number
+        },
+        firstName: "John",
+        lastName: "Doe",
+        fullName: "John Doe",
+        imageUrl: "https://placehold.co/100x100", // Placeholder avatar
+        username: "johndoe",
+        // Add any other fields your app expects from Clerk's user object
+      } as UserResource
+    : null;
+
   // Hook 1: Only call Clerk hook in production
-  const clerkData = isDevelopment ? null : useUser();
+  const clerkData = isDevelopment
+    ? {
+        isLoaded: true,
+        isSignedIn: true,
+        user: dummyClerkUser,
+      }
+    : useUser();
   const {
     isLoaded,
     isSignedIn,
@@ -30,27 +58,27 @@ export function useCombinedUser(): UseCombinedUser {
     user: null,
   };
 
-  // Hook 2: User context hook
-  const { user, initializeUser, clearUserData, isLoading, setUser } =
-    useUserContext();
-
   // Development mode: override with sample data
   useEffect(() => {
     if (isDevelopment) {
-      // Auto-load sample data in development
-      setUser(userSample);
+      const delay = setTimeout(() => {
+        setUser(userSample);
+      }, 2500); // 1 second delay
+
+      return () => clearTimeout(delay); // Cleanup
     }
   }, [isDevelopment, setUser]);
 
-  // Return combined interface
+  const isDevUserLoaded = isDevelopment && user?.clerkId === userSample.clerkId;
+
   return {
     user: isDevelopment ? userSample : user,
-    isLoading: isDevelopment ? false : isLoading,
+    isLoading: isDevelopment ? !isDevUserLoaded : isLoading,
     initializeUser,
     clearUserData,
-    isLoaded: isDevelopment ? true : isLoaded,
-    isSignedIn: isDevelopment ? true : isSignedIn ?? false,
-    clerkUser: isDevelopment ? null : clerkUser ?? null, // No clerk user in dev mode
+    isLoaded: isDevelopment ? isDevUserLoaded : isLoaded,
+    isSignedIn: isDevelopment ? isDevUserLoaded : isSignedIn ?? false,
+    clerkUser:  clerkUser ?? null,
     setUser,
   };
 }

@@ -9,6 +9,7 @@ import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { User, Settings, CreditCard, ChevronDown, LayoutDashboard, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCombinedUser } from "@/hooks/use-combined-user";
 
 function UserAvatar(){
   const { user } = useUser();
@@ -32,7 +33,7 @@ interface TopBarProps {
 }
 
 export function TopBar() {
-  const { user } = useUser();
+  const { clerkUser, user } = useCombinedUser();
   const { resolvedTheme } = useTheme();
   const { openOverlay } = usePricingOverlay();
   const [mounted, setMounted] = useState(false);
@@ -43,16 +44,17 @@ export function TopBar() {
 
   // After mounting, we have access to the theme
   useEffect(() => {
-    if (user) {
-      setFirstName(user.firstName || "");
-      setLastName(user.lastName || "");
-      setEmail(user.emailAddresses[0]?.emailAddress || "");    
+    if (clerkUser) {
+      setFirstName(clerkUser.firstName || "");
+      setLastName(clerkUser.lastName || "");
+      setEmail(clerkUser.primaryEmailAddress?.emailAddress || "");    
     }
     setMounted(true);
-  }, [user]);
+  }, [clerkUser]);
 
   return (
-    <header className="w-full border-b bg-card text-card-foreground dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+    <header className="fixed top-0 left-0 z-50 w-full border-b bg-card text-card-foreground dark:bg-[#1a1f2e] dark:border-[#2a3042]">
+
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-6">
           <Link href="/" className="mt-1 block">

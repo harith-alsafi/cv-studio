@@ -1,3 +1,4 @@
+"use server";
 import { Resume } from "@/types/resume";
 import OpenAI from "openai";
 import { ResponseFormatJSONSchema } from "openai/resources/shared.mjs";
@@ -238,8 +239,12 @@ export async function LLMParseResume(
   return await LLMResumeResponse(systemMessage, userMessage);
 }
 
-export async function LLMGenerateResume(){
+export async function LLMGenerateResume(resume: Resume,
+  jobDescription: string){
+    let systemMessage = "You are an expert resume writer. Rephrase the contents of the jobs, courses, projects and education into the specified JSON schema format. The rewritten information should be tailored to highlight aspects that are most relevant to the provided job description. Focus on skills, experiences, and qualifications that align with the job requirements.";
 
+  const userMessage = `Resume Content:\n${JSON.stringify(resume)}\n\nJob Description:\n${jobDescription}`;
+  return await LLMResumeResponse(systemMessage, userMessage);
 }
 
 export async function LLMGenerateCoverLetter(){

@@ -48,6 +48,8 @@ import { createStripeCustomer } from "@/lib/stripe-payment";
 import { useTemplateContext } from "@/context/template-context";
 import { TemplateEntry } from "@/types/latex-template";
 import { useCombinedUser } from "@/hooks/use-combined-user";
+import { LLMGenerateResume, LLMParseResume } from "@/lib/llm-logic";
+import { generatePdf } from "@/lib/pdf-gen";
 
 interface OpenAIResponse {
   role: string;
@@ -57,139 +59,65 @@ interface OpenAIResponse {
 
 function ResumeGeneratorSkeleton() {
   return (
-    <div className="min-h-screen w-full bg-background flex flex-col overflow-hidden">
-      {/* TopBar Skeleton */}
-      <div className="w-full p-4 border-b border-border">
-        <Skeleton className="h-8 w-48" />
-      </div>
-
-      <div className="py-6 flex-1 px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1440px] mx-auto">
-        {/* Left Panel - Form Skeleton */}
-        <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
-          <div className="space-y-6">
-            {/* Template Section */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-10 w-[180px]" />
-              </div>
-            </div>
-
-            {/* Upload Resume Section */}
-            <div>
-              <Skeleton className="h-6 w-32 mb-2" />
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-4 w-24" />
-              </div>
-            </div>
-
-            {/* Job Title Section */}
-            <div>
+    <div className="py-6 flex-1 px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1440px] mx-auto">
+      {/* Left Panel - Input Form */}
+      <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm flex flex-col h-full overflow-hidden relative">
+        <div className="space-y-6 p-6 flex-grow overflow-y-auto">
+          {/* Template Section */}
+          <div>
+            <div className="mb-4">
               <Skeleton className="h-6 w-20 mb-2" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-
-            {/* Job Description Section */}
-            <div>
-              <Skeleton className="h-6 w-32 mb-2" />
-              <Skeleton className="h-[120px] w-full" />
-            </div>
-
-            {/* Additional Info Toggle */}
-            <div>
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-5 w-32" />
-              </div>
-
-              {/* Additional Info Fields (showing as if expanded) */}
-              <div className="mt-4 space-y-4">
-                <div>
-                  <Skeleton className="h-6 w-24 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-
-                <div>
-                  <Skeleton className="h-6 w-24 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-
-                <div>
-                  <Skeleton className="h-6 w-28 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-
-                <div>
-                  <Skeleton className="h-6 w-16 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-
-                <div>
-                  <Skeleton className="h-6 w-20 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-
-                <div>
-                  <Skeleton className="h-6 w-20 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              </div>
+              <Skeleton className="h-10 w-[280px]" />
             </div>
           </div>
 
-          {/* Generate Button */}
-          <div className="sticky bottom-6 flex justify-center mt-6">
-            <Skeleton className="h-12 w-40" />
+          {/* Upload Resume Section */}
+          <div>
+            <Skeleton className="h-6 w-32 mb-2" />
+            <div className="flex items-center gap-2 mt-2">
+              <Skeleton className="h-10 w-[280px]" />
+            </div>
+          </div>
+
+          {/* Job Title Section */}
+          <div>
+            <Skeleton className="h-6 w-20 mb-2" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Job Description Section */}
+          <div>
+            <Skeleton className="h-6 w-32 mb-2" />
+            <Skeleton className="h-[120px] w-full" />
+          </div>
+
+          {/* Additional Info Toggle */}
+          <div>
+            <Skeleton className="h-5 w-36" />
           </div>
         </div>
 
-        {/* Right Panel - PDF Viewer Skeleton */}
-        <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm flex flex-col">
-          <div className="flex-1 overflow-hidden relative">
-            {/* PDF Viewer Area */}
-            <div className="h-full flex flex-col gap-4">
-              {/* PDF Header */}
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-8 w-20" />
-              </div>
+        {/* Generate Button */}
+        <div className="p-4 border-t border-border bg-card">
+          <Skeleton className="h-12 w-full" />
+        </div>
+      </div>
 
-              {/* PDF Content Area */}
-              <div className="flex-1 border border-border rounded-lg p-4 space-y-4">
-                {/* Header section */}
-                <div className="text-center space-y-2">
-                  <Skeleton className="h-8 w-48 mx-auto" />
-                  <Skeleton className="h-4 w-64 mx-auto" />
-                  <Skeleton className="h-4 w-56 mx-auto" />
-                </div>
-
-                {/* Sections */}
-                <div className="space-y-6 mt-8">
-                  {[1, 2, 3, 4].map((section) => (
-                    <div key={section} className="space-y-2">
-                      <Skeleton className="h-6 w-32" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+      {/* Right Panel - PDF Preview */}
+      <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm flex flex-col">
+        <div className="flex-1 overflow-hidden relative">
+          <div className="flex items-center justify-center h-full">
+            <div className="flex flex-col items-center gap-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <Skeleton className="h-4 w-48" />
             </div>
-          </div>
-
-          {/* Download Button */}
-          <div className="mt-4 flex justify-end">
-            <Skeleton className="h-10 w-32" />
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 
 interface CVEditorContentProps {
   openPricingDialog: () => void;
@@ -216,8 +144,8 @@ function CVEditorContent({
   const [jobTitle, setJobTitle] = useState("Service Designer");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [generatedPDF, setGeneratedPDF] = useState<string | null>(null);
-  const [templateType, setTemplateType] = useState<TemplateEntry | null>(
-    templates?.at(0) || null
+  const [templateType, setTemplateType] = useState<TemplateEntry | undefined>(
+    templates?.at(0) || undefined
   );
   const [templateName, setTemplateName] = useState("Classic");
   const [loading, setLoading] = useState(false);
@@ -256,13 +184,13 @@ function CVEditorContent({
       }
 
       if (clerkUser) {
-        const emailAddress = clerkUser.emailAddresses[0]?.emailAddress || "";
+        const emailAddress = clerkUser.primaryEmailAddress?.emailAddress || "";
 
         // Update form fields with Clerk user data
         setFirstName(clerkUser.firstName || "");
         setLastName(clerkUser.lastName || "");
         setEmail(emailAddress);
-        setPhone(clerkUser.phoneNumbers[0]?.phoneNumber || "");
+        setPhone(clerkUser.primaryPhoneNumber?.phoneNumber || "");
 
         // Initialize user data (will check localStorage first, then Firestore)
         try {
@@ -373,92 +301,23 @@ function CVEditorContent({
       const text = await extractTextFromFile(resumeFile);
 
       // Send to parser API
-      const response = await fetch("/api/parse-resume", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text,
-          jobDescription: jobDescription.trim(),
-          jobTitle,
-          additionalInfo: showAdditionalInfo
-            ? {
-                firstName,
-                lastName,
-                email,
-                phone,
-                address,
-                website,
-              }
-            : null,
-        }),
-      });
+      const parsedContent = await LLMParseResume(text, jobDescription.trim());
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Failed to parse resume:", errorText);
-        throw new Error(`Failed to parse resume: ${response.statusText}`);
-      }
-
-      const data: OpenAIResponse = await response.json();
-
-      if (data.content) {
-        const parsedContent = JSON.parse(data.content) as Resume;
+      if (parsedContent) {
         setParsedData(parsedContent);
+        
+        const resumeDataLlm = await LLMGenerateResume(parsedContent, jobDescription);
 
-        // Generate tailored resume content using LLM
-        const responseLlm = await fetch("/api/resume-gen", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            resume: parsedContent,
-            jobDescription,
-            jobTitle,
-            language,
-          }),
-        });
-
-        if (!responseLlm.ok) {
-          const errorText = await responseLlm.text();
-          console.error(
-            "Failed to generate resume content from LLM:",
-            errorText
-          );
+    
+        if (!resumeDataLlm) {
+          console.error("Failed to generate PDF:");
           throw new Error(
-            `Failed to generate resume content from LLM: ${responseLlm.statusText}`
+            `Failed to generate PDF:`
           );
         }
 
-        const dataLlm: OpenAIResponse = await responseLlm.json();
-        if (!dataLlm.content) {
-          console.error("LLM response content is empty or missing.");
-          throw new Error("Failed to get valid content from LLM.");
-        }
-        const resumeDataLlm = JSON.parse(dataLlm.content) as Resume;
-
-        const pdfGenResponse = await fetch("/api/pdf-gen", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            resume: resumeDataLlm,
-            template: templateType?.data,
-          }),
-        });
-
-        if (!pdfGenResponse.ok) {
-          const errorText = await pdfGenResponse.text();
-          console.error("Failed to generate PDF:", errorText);
-          throw new Error(
-            `Failed to generate PDF: ${pdfGenResponse.statusText}`
-          );
-        }
-
-        const blob = await pdfGenResponse.blob();
+        const pdfBuffer = await generatePdf(resumeDataLlm, templateType?.data);
+        const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
         const pdfDataUrl = URL.createObjectURL(blob);
         setGeneratedPDF(pdfDataUrl);
       } else {
@@ -505,7 +364,8 @@ function CVEditorContent({
   }
 
   return (
-    <main className="min-h-screen w-full bg-background flex flex-col overflow-hidden">
+    <>
+
 
 
       <TemplatePopup
@@ -747,7 +607,7 @@ function CVEditorContent({
           )}
         </div>
       </div>
-    </main>
+    </>
   );
 }
 
