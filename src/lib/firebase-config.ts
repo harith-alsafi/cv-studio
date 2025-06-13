@@ -2,12 +2,11 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
 const devConfig = {
   apiKey: "DEV_API_KEY",
   authDomain: "dev-project.firebaseapp.com",
-  projectId: "dev-project-id",
+  projectId: "cv-studio-4876b",
   storageBucket: "dev-project.appspot.com",
   messagingSenderId: "DEV_MESSAGING_SENDER_ID",
   appId: "DEV_APP_ID",

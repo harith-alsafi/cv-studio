@@ -54,6 +54,7 @@ export async function findOrCreateUser(
       stripeId,
       clerkId,
       email: emailAddress,
+      lastUpdated: new Date(),
       data: {
         resumes: [],
         generations: [],

@@ -1,4 +1,4 @@
-Jun 12, 2025 10:38:53 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+Jun 14, 2025 12:05:36 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
 INFO: Started WebSocket server on ws://127.0.0.1:9150
 API endpoint: http://127.0.0.1:9020
 If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
@@ -12,302 +12,89 @@ If you are running a Firestore in Datastore Mode project, run:
 Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
 Dev App Server is now running.
 
-Jun 12, 2025 10:39:01 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+Jun 14, 2025 12:06:17 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
 INFO: Connected to new websocket client
-Jun 12, 2025 11:00:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 12, 2025 11:00:59 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:00:59 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:01:44 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:01:59 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:01:59 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 12, 2025 11:04:22 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 12, 2025 11:04:22 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:04:22 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:05:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:05:22 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:05:22 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 12, 2025 11:05:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 12, 2025 11:05:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:05:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:06:37 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:06:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 12, 2025 11:06:52 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 1:36:53 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
-INFO: Websocket client disconnected
-Jun 13, 2025 8:25:18 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+Jun 14, 2025 12:06:17 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
 INFO: Connected to new websocket client
-Jun 13, 2025 10:11:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:23 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:11:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:23 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:11:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:23 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:16:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:16:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:16:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:17:02 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:17:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:17:17 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:19:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:19:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:19:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:19:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:20:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:20:07 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:20:08 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:20:08 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:20:08 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:22:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:22:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:22:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:23:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:23:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:23:41 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:26:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:26:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:26:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:26:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:27:07 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:27:07 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:30:46 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:30:46 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:30:46 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:31:31 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:31:46 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:31:46 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:31:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:31:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:31:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:32:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:32:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:32:51 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:36:29 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:36:29 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:36:29 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:39:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:39:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:39:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:40:02 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:40:17 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:40:17 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:40:55 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:40:55 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:40:55 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:41:31 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:41:31 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:41:40 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:41:47 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:41:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:41:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:42:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:43:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:43:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:43:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:43:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:43:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:44:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:44:12 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:44:42 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:45:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:45:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:45:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:45:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:45:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:46:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:46:12 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 10:46:42 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:47:27 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:47:52 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
-INFO: Connected to new websocket client
-Jun 13, 2025 10:48:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:48:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:23 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected HTTP/2 connection.
-Jun 13, 2025 10:48:12 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:48:28 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+Jun 14, 2025 12:07:23 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
 INFO: Websocket client disconnected
-Jun 13, 2025 10:48:28 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+Jun 14, 2025 12:07:23 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
 INFO: Connected to new websocket client
-Jun 13, 2025 10:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:23 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:49:44 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:23 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:50:30 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:50:37 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:51:50 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 10:51:50 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:51:50 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:52:35 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:52:50 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 10:52:50 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
-INFO: channel closed
-Jun 13, 2025 11:00:39 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+Jun 14, 2025 12:07:23 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
 INFO: Websocket client disconnected
-Jun 13, 2025 11:05:47 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 11:05:47 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:06:32 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:06:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Multiple projectIds are not recommended in single project mode. Requested project ID dev-project-id, but the emulator is configured for cv-studio-4876b. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
-Jun 13, 2025 11:06:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:06:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:07:37 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+Jun 14, 2025 12:07:24 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
 INFO: Connected to new websocket client
-Jun 13, 2025 11:07:37 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:07:38 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:07:38 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:07:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:07:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:07:53 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
+Jun 14, 2025 12:07:53 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:08:02 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:08:02 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+Jun 14, 2025 12:08:02 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+Jun 14, 2025 12:08:02 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:08:03 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:08:21 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:08:23 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:08:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:08:48 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:09:31 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:09:31 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:09:31 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:09:32 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+Jun 14, 2025 12:09:32 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+Jun 14, 2025 12:09:32 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:09:32 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:09:35 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:09:35 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:10:17 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:10:20 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:10:32 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:10:32 AM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
 INFO: channel closed
-Jun 13, 2025 11:08:24 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:11:05 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:08:42 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jun 14, 2025 12:11:05 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:09:10 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:09:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:10:42 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:11:28 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:12:14 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:13:00 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:13:46 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jun 13, 2025 11:15:02 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
+Jun 14, 2025 12:11:05 AM com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1 exportData
+INFO: Exporting emulator data to firebase-export-1749856265829c4Gqqv/firestore_export
 *** shutting down gRPC server since JVM is shutting down
 *** server shut down

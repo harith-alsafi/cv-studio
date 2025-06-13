@@ -55,6 +55,22 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Compare lastUpdated timestamps to determine which version is newer
+  const isDataNewer = (data1: User, data2: User): boolean => {
+    if (!data1.lastUpdated && !data2.lastUpdated) return false;
+    if (!data1.lastUpdated) return false;
+    if (!data2.lastUpdated) return true;
+    
+    const timestamp1 = typeof data1.lastUpdated === 'string' 
+      ? new Date(data1.lastUpdated).getTime() 
+      : data1.lastUpdated.getTime();
+    const timestamp2 = typeof data2.lastUpdated === 'string' 
+      ? new Date(data2.lastUpdated).getTime() 
+      : data2.lastUpdated.getTime();
+    
+    return timestamp1 > timestamp2;
+  };
+
   // Debounced database update
   const scheduleDbUpdate = (userData: User) => {
     // Clear existing timer
@@ -65,8 +81,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     // Schedule new update after 60 seconds
     updateTimerRef.current = setTimeout(async () => {
       try {
-        await saveUser(userData);
-        console.log("User data synced to database");
+        // Update lastUpdated timestamp before saving
+        const updatedUserData = {
+          ...userData,
+          lastUpdated: new Date()
+        };
+        
+        await saveUser(updatedUserData);
+        console.log("User data synced to database with timestamp:", updatedUserData.lastUpdated);
+        
+        // Update local state with the new timestamp
+        setUserState(updatedUserData);
+        saveUserToStorage(updatedUserData);
       } catch (error) {
         console.error("Error syncing user data to database:", error);
       }
@@ -75,15 +101,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   // Enhanced setUser function that handles localStorage and database sync
   const setUser = (userData: User | null) => {
-    setUserState(userData);
-    saveUserToStorage(userData);
-    
     if (userData) {
-      scheduleDbUpdate(userData);
+      // Add/update lastUpdated timestamp for local changes
+      const updatedUserData = {
+        ...userData,
+        lastUpdated: new Date()
+      };
+      
+      setUserState(updatedUserData);
+      saveUserToStorage(updatedUserData);
+      scheduleDbUpdate(updatedUserData);
+    } else {
+      setUserState(null);
+      saveUserToStorage(null);
     }
   };
 
-  // Initialize user - check localStorage first, then Firestore
+  // Initialize user - check localStorage first, then Firestore, sync based on lastUpdated
   const initializeUser = async (clerkId: string, emailAddress: string) => {
     if (isInitializedRef.current) return;
     
@@ -94,13 +128,33 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const cachedUser = loadUserFromStorage();
       
       if (cachedUser && cachedUser.clerkId === clerkId) {
-        console.log("Loading user from localStorage cache");
-        setUserState(cachedUser);
+        console.log("Found user in localStorage cache");
         
-        // Set up Firestore listener for this user
+        // Fetch from Firestore to compare timestamps
+        const firestoreUser = await findOrCreateUser(clerkId, emailAddress);
+        
+        // Compare lastUpdated timestamps to determine which is newer
+        let finalUser: User;
+        
+        if (isDataNewer(cachedUser, firestoreUser)) {
+          console.log("localStorage version is newer, using cached data");
+          finalUser = cachedUser;
+          // Schedule an immediate sync to update Firestore
+          scheduleDbUpdate(cachedUser);
+        } else if (isDataNewer(firestoreUser, cachedUser)) {
+          console.log("Firestore version is newer, updating cache");
+          finalUser = firestoreUser;
+          saveUserToStorage(firestoreUser);
+        } else {
+          console.log("Both versions have same timestamp, using Firestore version");
+          finalUser = firestoreUser;
+          saveUserToStorage(firestoreUser);
+        }
+        
+        setUserState(finalUser);
         setupFirestoreListener(clerkId);
       } else {
-        console.log("Fetching user from Firestore");
+        console.log("No cached user found, fetching from Firestore");
         // Fetch from Firestore and cache
         const fetchedUser = await findOrCreateUser(clerkId, emailAddress);
         setUserState(fetchedUser);
@@ -135,11 +189,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const updatedUser = docSnapshot.data() as User;
-          console.log("User data updated from Firestore");
+          const currentUser = user;
           
-          // Update both React state and localStorage
-          setUserState(updatedUser);
-          saveUserToStorage(updatedUser);
+          // Only update if the Firestore version is newer than our current version
+          if (!currentUser || isDataNewer(updatedUser, currentUser)) {
+            console.log("Firestore data is newer, updating local state");
+            setUserState(updatedUser);
+            saveUserToStorage(updatedUser);
+          } else {
+            console.log("Local data is newer or same, ignoring Firestore update");
+          }
         }
       },
       (error) => {
@@ -176,14 +235,27 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   // Handle browser tab close/refresh
   useEffect(() => {
     const handleBeforeUnload = () => {
-      clearUserData();
+      // Force immediate sync before closing if there are pending changes
+      if (updateTimerRef.current && user) {
+        clearTimeout(updateTimerRef.current);
+        // Note: You might want to use navigator.sendBeacon for more reliable sync on close
+        saveUser({
+          ...user,
+          lastUpdated: new Date()
+        }).catch(console.error);
+      }
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
-        // Optionally clear data when tab becomes hidden
-        // Uncomment if you want to clear on tab switch
-        // clearUserData();
+        // Optionally sync when tab becomes hidden
+        if (user && updateTimerRef.current) {
+          clearTimeout(updateTimerRef.current);
+          saveUser({
+            ...user,
+            lastUpdated: new Date()
+          }).catch(console.error);
+        }
       }
     };
 
@@ -202,7 +274,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         firestoreUnsubscribeRef.current();
       }
     };
-  }, []);
+  }, [user]);
 
   // Initialize on mount if user was previously logged in
   useEffect(() => {

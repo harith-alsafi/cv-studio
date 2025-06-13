@@ -41,6 +41,7 @@ export interface User {
   clerkId: string;
   email: string;
   stripeId: string;
+  lastUpdated: Date;
   
   data: UserData;
 }
@@ -49,6 +50,7 @@ export const userSample: User = {
   clerkId: "user_2abc123def456",
   email: "john.doe@example.com",
   stripeId: "cus_abc123def456",
+  lastUpdated: new Date("2024-06-01T10:00:00Z"),
   data: {
     resumes: [
       {
