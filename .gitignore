@@ -50,3 +50,7 @@ next-env.d.ts
 /infra/node_modules/*
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Firebase configuration (can include secrets)
+firebase-debug.log
+firestore-debug.log
