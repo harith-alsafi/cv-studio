@@ -219,3 +219,59 @@ INFO: Exporting emulator data to firebase-export-1749856265829c4Gqqv/firestore_e
 [info] i  hub: Stopping emulator hub {"metadata":{"emulator":{"name":"hub"},"message":"Stopping emulator hub"}}
 [info] i  logging: Stopping Logging Emulator {"metadata":{"emulator":{"name":"logging"},"message":"Stopping Logging Emulator"}}
 [debug] [2025-06-13T23:11:06.233Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: connect ECONNREFUSED 127.0.0.1:40001. If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[debug] [2025-06-13T23:13:22.039Z] ----------------------------------------------------------------------
+[debug] [2025-06-13T23:13:22.045Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Harit\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only firestore --debug --import=./seed
+[debug] [2025-06-13T23:13:22.045Z] CLI Version:   14.7.0
+[debug] [2025-06-13T23:13:22.045Z] Platform:      win32
+[debug] [2025-06-13T23:13:22.045Z] Node Version:  v20.18.1
+[debug] [2025-06-13T23:13:22.045Z] Time:          Sat Jun 14 2025 00:13:22 GMT+0100 (British Summer Time)
+[debug] [2025-06-13T23:13:22.045Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-06-13T23:13:22.180Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-06-13T23:13:22.182Z] > authorizing via signed-in user (harithsami01@gmail.com)
+[debug] [2025-06-13T23:13:22.400Z] java version "24.0.1" 2025-04-15
+
+[debug] [2025-06-13T23:13:22.401Z] Java(TM) SE Runtime Environment (build 24.0.1+9-30)
+Java HotSpot(TM) 64-Bit Server VM (build 24.0.1+9-30, mixed mode, sharing)
+
+[debug] [2025-06-13T23:13:22.422Z] Parsed Java major version: 24
+[info] i  emulators: Starting emulators: firestore {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: firestore"}}
+[debug] [2025-06-13T23:13:22.432Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-06-13T23:13:22.432Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-06-13T23:13:22.432Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-06-13T23:13:22.433Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":9021},{"address":"::1","family":"IPv6","port":9021}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":9020}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-06-13T23:13:22.436Z] [hub] writing locator at D:\Temp\hub-cv-studio-4876b.json
+[info] i  firestore: Importing data from D:\Projects\Coding\CVStudio\cv-studio\seed\firestore_export\firestore_export.overall_export_metadata {"metadata":{"emulator":{"name":"firestore"},"message":"Importing data from D:\\Projects\\Coding\\CVStudio\\cv-studio\\seed\\firestore_export\\firestore_export.overall_export_metadata"}}
+[debug] [2025-06-13T23:13:22.445Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-06-13T23:13:22.446Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2025-06-13T23:13:22.446Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\Harit\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",9020,"--websocket_port",9150,"--project_id","cv-studio-4876b","--seed_from_export","D:\\Projects\\Coding\\CVStudio\\cv-studio\\seed\\firestore_export\\firestore_export.overall_export_metadata","--rules","D:\\Projects\\Coding\\CVStudio\\cv-studio\\firestore.rules","--single_project_mode",true],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":9020} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\Harit\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",9020,\"--websocket_port\",9150,\"--project_id\",\"cv-studio-4876b\",\"--seed_from_export\",\"D:\\\\Projects\\\\Coding\\\\CVStudio\\\\cv-studio\\\\seed\\\\firestore_export\\\\firestore_export.overall_export_metadata\",\"--rules\",\"D:\\\\Projects\\\\Coding\\\\CVStudio\\\\cv-studio\\\\firestore.rules\",\"--single_project_mode\",true],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":9020}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2025-06-13T23:13:27.365Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:9021/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Firestore │ 127.0.0.1:9020 │ http://127.0.0.1:9021/firestore │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2025-06-13T23:15:11.287Z] Received signal SIGINT (Ctrl-C) 1
+[info]  
+[info] i  emulators: Received SIGINT (Ctrl-C) for the first time. Starting a clean shutdown. 
+[info] i  emulators: Please wait for a clean shutdown or send the SIGINT (Ctrl-C) signal again to stop right now. 
+[info] i  emulators: Shutting down emulators. {"metadata":{"emulator":{"name":"hub"},"message":"Shutting down emulators."}}
+[info] i  ui: Stopping Emulator UI {"metadata":{"emulator":{"name":"ui"},"message":"Stopping Emulator UI"}}
+[info] i  firestore: Stopping Firestore Emulator {"metadata":{"emulator":{"name":"firestore"},"message":"Stopping Firestore Emulator"}}
+[warn] !  Firestore Emulator has exited upon receiving signal: SIGINT 
+[info] i  hub: Stopping emulator hub {"metadata":{"emulator":{"name":"hub"},"message":"Stopping emulator hub"}}
+[info] i  logging: Stopping Logging Emulator {"metadata":{"emulator":{"name":"logging"},"message":"Stopping Logging Emulator"}}
+[debug] [2025-06-13T23:15:11.299Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
