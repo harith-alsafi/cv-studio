@@ -15,6 +15,7 @@ import { Resume } from "@/types/resume"; // Adjust imports
 import { createStripeCustomer } from "@/lib/stripe-payment";
 
 export async function loadUser(clerkId: string): Promise<User | null> {
+  console.log("Loading user with Clerk ID:", clerkId);
   const userRef = doc(db, "users", clerkId);
   const snapshot = await getDoc(userRef);
   if (!snapshot.exists()) return null;
