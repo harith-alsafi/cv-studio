@@ -32,7 +32,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
 
 if (process.env.NODE_ENV === 'development') {
-  connectFirestoreEmulator(db, 'localhost', 9020);
+  connectFirestoreEmulator(db, 'localhost', process.env.FIRESTORE_PORT ? parseInt(process.env.FIRESTORE_PORT) : 9020);
 }
 
 export { app, db };

@@ -13,10 +13,23 @@ import {
   User,
   ResumeInfo,
   Generation,
+  GenerationInput,
+  GenerationOutput,
 } from "@/types/user";
 import { saveUser, findOrCreateUser } from "@/lib/firestore-db";
 import { Resume } from "@/types/resume";
-import { clearUserStorage, isUserInitialized, loadCurrentGenerationFromStorage, loadUserFromStorage, saveCurrentGenerationToStorage, saveUserToStorage, setUserInitialized } from "@/lib/local-storage";
+import {
+  clearUserStorage,
+  isUserInitialized,
+  loadCurrentGenerationFromStorage,
+  loadUserFromStorage,
+  saveCurrentGenerationToStorage,
+  saveUserToStorage,
+  setUserInitialized,
+} from "@/lib/local-storage";
+import { TemplateEntry } from "@/types/latex-template";
+import { LLMGenerateResume } from "@/lib/llm-logic";
+import { deletePdfFromR2, generatePdf, uploadPdfToR2 } from "@/lib/pdf-gen";
 
 // Define the shape of the context
 interface UserContextType {
@@ -30,8 +43,9 @@ interface UserContextType {
 
   // Resume management functions
   addResumeInfo: (resumeInfo: ResumeInfo) => void;
-  searchResumeByName: (name: string) => ResumeInfo | null;
+  findResumeByName: (name: string) => ResumeInfo | null;
   updateResumeInResumeInfo: (resumeName: string, updatedResume: Resume) => void;
+  deleteResumeInfo: (resumeName: string) => void;
 
   // Generation management functions
   addGeneration: (generation: Generation) => void;
@@ -40,6 +54,15 @@ interface UserContextType {
     generationId: string,
     updatedResume: Resume
   ) => void;
+  getNewGenerationId: () => string;
+  deleteGeneraion: (id: string) => boolean;
+
+  newGeneration: (
+    resumeName: string,
+    template: TemplateEntry,
+    jobDescription: string,
+    onPdfGen?: (blob: Blob) => void
+  ) => Promise<Generation | null>;
 }
 
 // Create the context
@@ -74,6 +97,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         : data2.lastUpdated;
 
     return timestamp1 > timestamp2;
+  };
+
+  const getNewGenerationId = (): string => {
+    const generationsLength = user?.data.generations
+      ? user.data.generations.length
+      : 0;
+    return `gen_${Date.now()}_${generationsLength + 1}`;
   };
 
   // Debounced database update
@@ -140,7 +170,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setUser(updatedUser);
   };
 
-  const searchResumeByName = (name: string): ResumeInfo | null => {
+  const findResumeByName = (name: string): ResumeInfo | null => {
     if (!user) return null;
 
     return (
@@ -170,6 +200,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       },
     };
 
+    setUser(updatedUser);
+  };
+
+  const deleteResumeInfo = (resumeName: string) => {
+    if (!user) return;
+    const updatedResumes = user.data.resumes.filter(
+      (resumeInfo) => resumeInfo.name !== resumeName
+    );
+    const updatedUser = {
+      ...user,
+      data: {
+        ...user.data,
+        resumes: updatedResumes,
+      },
+    };
     setUser(updatedUser);
   };
 
@@ -236,6 +281,54 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setCurrentGeneration(updatedCurrentGeneration);
       saveCurrentGenerationToStorage(updatedCurrentGeneration);
     }
+  };
+
+  const deleteGeneraion = (id: string): boolean => {
+    if (!user) return false;
+
+    const updatedGenerations = user.data.generations.filter(
+      (generation) => generation.id !== id
+    );
+
+    if (updatedGenerations.length === user.data.generations.length) {
+      // No generation was deleted
+      return false;
+    }
+
+    const updatedUser = {
+      ...user,
+      data: {
+        ...user.data,
+        generations: updatedGenerations,
+      },
+    };
+
+    setUser(updatedUser);
+
+    // If the deleted generation was the current one, clear it
+    if (currentGeneration && currentGeneration.id === id) {
+      setCurrentGeneration(null);
+      saveCurrentGenerationToStorage(null);
+    }
+
+    // delete from r2
+    const fileName = `${id}.pdf`;
+    deletePdfFromR2(user.clerkId, fileName)
+      .then((success) => {
+        if (!success) {
+          console.error(`Failed to delete PDF for generation ${id} from R2`);
+        } else {
+          console.log(`Successfully deleted PDF for generation ${id} from R2`);
+        }
+      })
+      .catch((error) => {
+        console.error(
+          `Error deleting PDF for generation ${id} from R2:`,
+          error
+        );
+      });
+
+    return true;
   };
 
   // Enhanced setCurrentGeneration function
@@ -368,6 +461,72 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     isInitializedRef.current = false;
   };
 
+  const newGeneration = async (
+    resumeName: string,
+    template: TemplateEntry,
+    jobDescription: string,
+    onPdfGen?: (blob: Blob) => void
+  ): Promise<Generation | null> => {
+    if (!user) {
+      console.error("User is not logged in");
+      return null;
+    }
+
+    const resumeInfo = findResumeByName(resumeName);
+
+    if (!resumeInfo) {
+      console.error(`Resume with name "${resumeName}" not found`);
+      return null;
+    }
+
+    const newGenId = getNewGenerationId();
+    const generationInput: GenerationInput = {
+      resumeName: resumeName,
+      templateId: template.id,
+      jobDescription: jobDescription,
+    };
+
+    const resumeDataLlm = await LLMGenerateResume(
+      resumeInfo.resume,
+      jobDescription
+    );
+
+    if (!resumeDataLlm) {
+      console.error("Failed to generate PDF:");
+      throw new Error(`Failed to generate PDF:`);
+    }
+
+    const pdfBuffer = await generatePdf(resumeDataLlm, template.data);
+    const blob = new Blob([pdfBuffer], { type: "application/pdf" });
+
+    if (onPdfGen) {
+      onPdfGen(blob);
+    }
+
+    const url = await uploadPdfToR2(
+      user?.clerkId || "",
+      pdfBuffer,
+      `${newGenId}.pdf`
+    );
+
+    const generationOutput: GenerationOutput = {
+      createdAt: new Date(),
+      generatedResume: resumeDataLlm,
+      pdfUrl: url,
+    };
+
+    const newGeneration: Generation = {
+      id: newGenId,
+      input: generationInput,
+      output: generationOutput,
+    };
+
+    // Add the new generation to the user data
+    addGeneration(newGeneration);
+
+    return newGeneration;
+  };
+
   // Handle browser tab close/refresh
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -445,13 +604,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
         // Resume management functions
         addResumeInfo,
-        searchResumeByName,
+        findResumeByName,
         updateResumeInResumeInfo,
+        deleteResumeInfo,
 
         // Generation management functions
         addGeneration,
         findGenerationById,
         updateResumeInGeneration,
+        getNewGenerationId,
+        deleteGeneraion,
+
+        newGeneration,
       }}
     >
       {children}

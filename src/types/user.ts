@@ -4,7 +4,7 @@ export interface GenerationInput {
   resumeName: string;
   templateId: string;
   jobDescription: string;
-  prompt: string;
+  prompt?: string;
 }
 
 export interface GenerationOutput {
