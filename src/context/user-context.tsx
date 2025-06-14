@@ -1,17 +1,45 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useRef,
+} from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase-config";
-import { User } from "@/types/user";
+import {
+  User,
+  ResumeInfo,
+  Generation,
+} from "@/types/user";
 import { saveUser, findOrCreateUser } from "@/lib/firestore-db";
+import { Resume } from "@/types/resume";
+import { clearUserStorage, isUserInitialized, loadCurrentGenerationFromStorage, loadUserFromStorage, saveCurrentGenerationToStorage, saveUserToStorage, setUserInitialized } from "@/lib/local-storage";
 
 // Define the shape of the context
 interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   isLoading: boolean;
+  currentGeneration: Generation | null;
+  setCurrentGeneration: (generation: Generation | null) => void;
   initializeUser: (clerkId: string, emailAddress: string) => Promise<void>;
   clearUserData: () => void;
+
+  // Resume management functions
+  addResumeInfo: (resumeInfo: ResumeInfo) => void;
+  searchResumeByName: (name: string) => ResumeInfo | null;
+  updateResumeInResumeInfo: (resumeName: string, updatedResume: Resume) => void;
+
+  // Generation management functions
+  addGeneration: (generation: Generation) => void;
+  findGenerationById: (id: string) => Generation | null;
+  updateResumeInGeneration: (
+    generationId: string,
+    updatedResume: Resume
+  ) => void;
 }
 
 // Create the context
@@ -21,53 +49,30 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [currentGeneration, setCurrentGeneration] = useState<Generation | null>(
+    null
+  );
+
   // Refs to manage timers and prevent memory leaks
   const updateTimerRef = useRef<NodeJS.Timeout | null>(null);
   const firestoreUnsubscribeRef = useRef<(() => void) | null>(null);
   const isInitializedRef = useRef(false);
-
-  // Keys for localStorage
-  const USER_STORAGE_KEY = "app_user_data";
-  const USER_INITIALIZED_KEY = "app_user_initialized";
-
-  // Load user from localStorage
-  const loadUserFromStorage = (): User | null => {
-    try {
-      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch (error) {
-      console.error("Error loading user from localStorage:", error);
-      return null;
-    }
-  };
-
-  // Save user to localStorage
-  const saveUserToStorage = (userData: User | null) => {
-    try {
-      if (userData) {
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
-      } else {
-        localStorage.removeItem(USER_STORAGE_KEY);
-      }
-    } catch (error) {
-      console.error("Error saving user to localStorage:", error);
-    }
-  };
 
   // Compare lastUpdated timestamps to determine which version is newer
   const isDataNewer = (data1: User, data2: User): boolean => {
     if (!data1.lastUpdated && !data2.lastUpdated) return false;
     if (!data1.lastUpdated) return false;
     if (!data2.lastUpdated) return true;
-    
-    const timestamp1 = typeof data1.lastUpdated === 'string' 
-      ? new Date(data1.lastUpdated).getTime() 
-      : data1.lastUpdated.getTime();
-    const timestamp2 = typeof data2.lastUpdated === 'string' 
-      ? new Date(data2.lastUpdated).getTime() 
-      : data2.lastUpdated.getTime();
-    
+
+    const timestamp1 =
+      typeof data1.lastUpdated === "string"
+        ? new Date(data1.lastUpdated)
+        : data1.lastUpdated;
+    const timestamp2 =
+      typeof data2.lastUpdated === "string"
+        ? new Date(data2.lastUpdated)
+        : data2.lastUpdated;
+
     return timestamp1 > timestamp2;
   };
 
@@ -84,12 +89,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         // Update lastUpdated timestamp before saving
         const updatedUserData = {
           ...userData,
-          lastUpdated: new Date()
+          lastUpdated: new Date(),
         };
-        
+
         await saveUser(updatedUserData);
-        console.log("User data synced to database with timestamp:", updatedUserData.lastUpdated);
-        
+        console.log(
+          "User data synced to database with timestamp:",
+          updatedUserData.lastUpdated
+        );
+
         // Update local state with the new timestamp
         setUserState(updatedUserData);
         saveUserToStorage(updatedUserData);
@@ -103,11 +111,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const setUser = (userData: User | null) => {
     if (userData) {
       // Add/update lastUpdated timestamp for local changes
-      const updatedUserData = {
+      const updatedUserData: User = {
         ...userData,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
-      
+
       setUserState(updatedUserData);
       saveUserToStorage(updatedUserData);
       scheduleDbUpdate(updatedUserData);
@@ -117,25 +125,144 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Resume management functions
+  const addResumeInfo = (resumeInfo: ResumeInfo) => {
+    if (!user) return;
+
+    const updatedUser = {
+      ...user,
+      data: {
+        ...user.data,
+        resumes: [...user.data.resumes, resumeInfo],
+      },
+    };
+
+    setUser(updatedUser);
+  };
+
+  const searchResumeByName = (name: string): ResumeInfo | null => {
+    if (!user) return null;
+
+    return (
+      user.data.resumes.find(
+        (resume) => resume.name.toLowerCase() === name.toLowerCase()
+      ) || null
+    );
+  };
+
+  const updateResumeInResumeInfo = (
+    resumeName: string,
+    updatedResume: Resume
+  ) => {
+    if (!user) return;
+
+    const updatedResumes = user.data.resumes.map((resumeInfo) =>
+      resumeInfo.name === resumeName
+        ? { ...resumeInfo, resume: updatedResume }
+        : resumeInfo
+    );
+
+    const updatedUser = {
+      ...user,
+      data: {
+        ...user.data,
+        resumes: updatedResumes,
+      },
+    };
+
+    setUser(updatedUser);
+  };
+
+  // Generation management functions
+  const addGeneration = (generation: Generation) => {
+    if (!user) return;
+
+    const updatedUser = {
+      ...user,
+      data: {
+        ...user.data,
+        generations: [...user.data.generations, generation],
+      },
+    };
+
+    setUser(updatedUser);
+  };
+
+  const findGenerationById = (id: string): Generation | null => {
+    if (!user) return null;
+
+    return (
+      user.data.generations.find((generation) => generation.id === id) || null
+    );
+  };
+
+  const updateResumeInGeneration = (
+    generationId: string,
+    updatedResume: Resume
+  ) => {
+    if (!user) return;
+
+    const updatedGenerations = user.data.generations.map((generation) =>
+      generation.id === generationId
+        ? {
+            ...generation,
+            output: {
+              ...generation.output,
+              generatedResume: updatedResume,
+            },
+          }
+        : generation
+    );
+
+    const updatedUser = {
+      ...user,
+      data: {
+        ...user.data,
+        generations: updatedGenerations,
+      },
+    };
+
+    setUser(updatedUser);
+
+    // Update current generation if it matches the updated one
+    if (currentGeneration && currentGeneration.id === generationId) {
+      const updatedCurrentGeneration = {
+        ...currentGeneration,
+        output: {
+          ...currentGeneration.output,
+          generatedResume: updatedResume,
+        },
+      };
+      setCurrentGeneration(updatedCurrentGeneration);
+      saveCurrentGenerationToStorage(updatedCurrentGeneration);
+    }
+  };
+
+  // Enhanced setCurrentGeneration function
+  const setCurrentGenerationEnhanced = (generation: Generation | null) => {
+    setCurrentGeneration(generation);
+    saveCurrentGenerationToStorage(generation);
+  };
+
   // Initialize user - check localStorage first, then Firestore, sync based on lastUpdated
   const initializeUser = async (clerkId: string, emailAddress: string) => {
     if (isInitializedRef.current) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       // Check if user exists in localStorage
       const cachedUser = loadUserFromStorage();
-      
+
       if (cachedUser && cachedUser.clerkId === clerkId) {
         console.log("Found user in localStorage cache");
-        
+
         // Fetch from Firestore to compare timestamps
         const firestoreUser = await findOrCreateUser(clerkId, emailAddress);
-        
+
         // Compare lastUpdated timestamps to determine which is newer
         let finalUser: User;
-        
+
         if (isDataNewer(cachedUser, firestoreUser)) {
           console.log("localStorage version is newer, using cached data");
           finalUser = cachedUser;
@@ -146,11 +273,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           finalUser = firestoreUser;
           saveUserToStorage(firestoreUser);
         } else {
-          console.log("Both versions have same timestamp, using Firestore version");
+          console.log(
+            "Both versions have same timestamp, using Firestore version"
+          );
           finalUser = firestoreUser;
           saveUserToStorage(firestoreUser);
         }
-        
+
         setUserState(finalUser);
         setupFirestoreListener(clerkId);
       } else {
@@ -159,15 +288,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const fetchedUser = await findOrCreateUser(clerkId, emailAddress);
         setUserState(fetchedUser);
         saveUserToStorage(fetchedUser);
-        
+
         // Set up Firestore listener
         setupFirestoreListener(clerkId);
       }
-      
+
+      // Load current generation from localStorage
+      const cachedGeneration = loadCurrentGenerationFromStorage();
+      if (cachedGeneration) {
+        setCurrentGeneration(cachedGeneration);
+      }
+
       // Mark as initialized
-      localStorage.setItem(USER_INITIALIZED_KEY, "true");
+      setUserInitialized(true);
       isInitializedRef.current = true;
-      
     } catch (error) {
       console.error("Error initializing user:", error);
     } finally {
@@ -183,21 +317,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const userRef = doc(db, "users", clerkId);
-    
+
     firestoreUnsubscribeRef.current = onSnapshot(
       userRef,
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const updatedUser = docSnapshot.data() as User;
           const currentUser = user;
-          
+
           // Only update if the Firestore version is newer than our current version
           if (!currentUser || isDataNewer(updatedUser, currentUser)) {
             console.log("Firestore data is newer, updating local state");
             setUserState(updatedUser);
             saveUserToStorage(updatedUser);
           } else {
-            console.log("Local data is newer or same, ignoring Firestore update");
+            console.log(
+              "Local data is newer or same, ignoring Firestore update"
+            );
           }
         }
       },
@@ -211,23 +347,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const clearUserData = () => {
     // Clear React state
     setUserState(null);
-    
+    setCurrentGeneration(null);
+
     // Clear localStorage
-    localStorage.removeItem(USER_STORAGE_KEY);
-    localStorage.removeItem(USER_INITIALIZED_KEY);
-    
+    clearUserStorage();
+
     // Clear timers
     if (updateTimerRef.current) {
       clearTimeout(updateTimerRef.current);
       updateTimerRef.current = null;
     }
-    
+
     // Unsubscribe from Firestore listener
     if (firestoreUnsubscribeRef.current) {
       firestoreUnsubscribeRef.current();
       firestoreUnsubscribeRef.current = null;
     }
-    
+
     // Reset initialization flag
     isInitializedRef.current = false;
   };
@@ -241,31 +377,31 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         // Note: You might want to use navigator.sendBeacon for more reliable sync on close
         saveUser({
           ...user,
-          lastUpdated: new Date()
+          lastUpdated: new Date(),
         }).catch(console.error);
       }
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
+      if (document.visibilityState === "hidden") {
         // Optionally sync when tab becomes hidden
         if (user && updateTimerRef.current) {
           clearTimeout(updateTimerRef.current);
           saveUser({
             ...user,
-            lastUpdated: new Date()
+            lastUpdated: new Date(),
           }).catch(console.error);
         }
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+
       // Cleanup on unmount
       if (updateTimerRef.current) {
         clearTimeout(updateTimerRef.current);
@@ -278,25 +414,44 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize on mount if user was previously logged in
   useEffect(() => {
-    const wasInitialized = localStorage.getItem(USER_INITIALIZED_KEY);
+    const wasInitialized = isUserInitialized();
     if (wasInitialized && !isInitializedRef.current) {
       const cachedUser = loadUserFromStorage();
       if (cachedUser) {
         setUserState(cachedUser);
         setupFirestoreListener(cachedUser.clerkId);
+
+        // Load current generation
+        const cachedGeneration = loadCurrentGenerationFromStorage();
+        if (cachedGeneration) {
+          setCurrentGeneration(cachedGeneration);
+        }
+
         isInitializedRef.current = true;
       }
     }
   }, []);
 
   return (
-    <UserContext.Provider 
-      value={{ 
-        user, 
-        setUser, 
-        isLoading, 
-        initializeUser, 
-        clearUserData 
+    <UserContext.Provider
+      value={{
+        user,
+        setUser,
+        isLoading,
+        currentGeneration,
+        setCurrentGeneration: setCurrentGenerationEnhanced,
+        initializeUser,
+        clearUserData,
+
+        // Resume management functions
+        addResumeInfo,
+        searchResumeByName,
+        updateResumeInResumeInfo,
+
+        // Generation management functions
+        addGeneration,
+        findGenerationById,
+        updateResumeInGeneration,
       }}
     >
       {children}

@@ -466,7 +466,7 @@ export function getLatexExpectedArgs(): Record<
 }
 
 export interface TemplateEntry {
-  key: string;
+  id: string;
   image: string;
   filePath: string;
   name: string;
@@ -481,14 +481,14 @@ export async function getLatexTemplates(): Promise<TemplateEntry[]> {
 
   return [
     {
-      key: "modern",
+      id: "modern",
       image: "/images/modern.png",
       filePath: fileName,
       name: "Modern",
       data: templateData,
     },
     {
-      key: "classic",
+      id: "classic",
       image: "/images/classic.png",
       filePath: fileName,
       name: "Classic",

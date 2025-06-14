@@ -1,21 +1,19 @@
 import { Resume } from "@/types/resume";
 
 export interface GenerationInput {
-  createdAt: Date;
-  resumeId: string;
+  resumeName: string;
   templateId: string;
   jobDescription: string;
   prompt: string;
 }
 
 export interface GenerationOutput {
-  id: string;
+  createdAt: Date;
   pdfUrl: string;
   generatedResume: Resume;
 }
 
 export interface ResumeInfo {
-  id: string;
   name: string;
   resume: Resume;
 }
@@ -54,7 +52,6 @@ export const userSample: User = {
   data: {
     resumes: [
       {
-        id: "resume_001",
         name: "Software Engineer Resume",
         resume: {
           name: "John Doe",
@@ -122,7 +119,6 @@ export const userSample: User = {
         }
       },
       {
-        id: "resume_002",
         name: "Product Manager Resume",
         resume: {
           name: "John Doe",
@@ -186,14 +182,13 @@ export const userSample: User = {
       {
         id: "gen_001",
         input: {
-          createdAt: new Date("2024-06-01T10:00:00Z"),
-          resumeId: "resume_001",
+          resumeName: "Software Engineer Resume",
           templateId: "template_modern",
           jobDescription: "Looking for a senior full-stack developer with React experience.",
           prompt: "Emphasize React and leadership experience."
         },
         output: {
-          id: "output_001",
+          createdAt: new Date("2024-06-01T10:00:00Z"),
           pdfUrl: "https://storage.example.com/resumes/gen_001.pdf",
           generatedResume: {
             name: "John Doe",
@@ -235,14 +230,13 @@ export const userSample: User = {
       {
         id: "gen_002",
         input: {
-          createdAt: new Date("2024-06-05T14:30:00Z"),
-          resumeId: "resume_002",
+          resumeName: "Product Manager Resume",
           templateId: "template_classic",
           jobDescription: "Product Manager role at a fintech startup.",
           prompt: "Highlight fintech and startup experience."
         },
         output: {
-          id: "output_002",
+          createdAt: new Date("2024-06-05T14:30:00Z"),
           pdfUrl: "https://storage.example.com/resumes/gen_002.pdf",
           generatedResume: {
             name: "John Doe",
@@ -283,14 +277,13 @@ export const userSample: User = {
       {
         id: "gen_003",
         input: {
-          createdAt: new Date("2024-06-10T09:15:00Z"),
-          resumeId: "resume_001",
+          resumeName: "Remote DevOps Engineer Resume",
           templateId: "template_minimal",
           jobDescription: "Remote DevOps engineer position.",
           prompt: "Focus on cloud and DevOps skills."
         },
         output: {
-          id: "output_003",
+          createdAt: new Date("2024-06-10T09:15:00Z"),
           pdfUrl: "https://storage.example.com/resumes/gen_003.pdf",
           generatedResume: {
             name: "John Doe",
